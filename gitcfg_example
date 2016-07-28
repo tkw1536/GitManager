@@ -1,0 +1,9 @@
+# This is an example configuration file for GitManager scripts
+# The basic syntax is:
+# > SUBFOLDER SOURCE
+# REPO_ZRI [PATH]
+
+# EXAMPLE
+> Projects https://github.com/%s
+>> tkw1536 tkw1536/%s
+GitManager.git

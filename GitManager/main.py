@@ -22,7 +22,7 @@ def do_clone(repos):
             print('%s %s == %s' % (Format.red('clone'), source, folder))
         else:
             print('git %s %s -> %s' % (Format.green('clone'), source, folder))
-            Git.clone(source, folder)
+            Git.clone(source, cwd, folder)
 
 
 def do_pull(repos):

@@ -189,6 +189,10 @@ class Git(VCS):
         # find the full folder to clone to.
         full_path = os.path.join(cwd, name)
 
+        # Create the cwd if it does not exist
+        if not os.path.isdir(cwd):
+            os.makedirs(cwd)
+
         return subprocess.call(["git", "clone", src, full_path], cwd=cwd) == 0
 
     @staticmethod

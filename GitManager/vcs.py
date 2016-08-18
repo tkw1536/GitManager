@@ -19,7 +19,7 @@ class VCS(object):
         :param name: Name of the folder to clone VCS to.
         :type name: str
 
-        :return: the path of the repository
+        :return: the path of the repository in absolute form.
         :rtype: str
         """
 
@@ -27,8 +27,11 @@ class VCS(object):
         if name is None:
             name = cls.get_humanish_part(src)
 
-        # and the simply join the path
-        return os.path.join(cwd, name)
+        # make the path
+        path = os.path.join(cwd, name)
+
+        # expand and return
+        return os.path.expanduser(path)
 
     @staticmethod
     def get_humanish_part(uri):
@@ -105,6 +108,19 @@ class VCS(object):
         """
 
         raise NotImplementedError
+
+    @staticmethod
+    def get_source(folder):
+        """ Gets the source of the repository in the given folder
+
+        :param folder: Folder to check in.
+        :type folder: str
+
+        :rtype: str
+        """
+
+        raise NotImplementedError
+
 
 
 class Git(VCS):
@@ -223,6 +239,18 @@ class Git(VCS):
 
         return subprocess.call(["git", "push"], cwd=path) == 0
 
+    @staticmethod
+    def get_source(folder):
+        """ Gets the source of the repository in the given folder
+
+        :param folder: Folder to check in.
+        :type folder: str
+
+        :rtype: str
+        """
+
+        p = subprocess.call(["git", "remote", "get-url", "origin"], cwd=folder, stdout=subprocess.PIPE)
+        p.communicate()
 
 class Subversion(VCS):
     """ An interface to the subversion VCS. """

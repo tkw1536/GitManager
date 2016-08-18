@@ -10,6 +10,38 @@ class Config(object):
         raise TypeError("Config() can not be instantiated")
 
     @staticmethod
+    def find_config_file():
+        """Finds the location of the Configuration File.
+
+        :rtype: str
+        """
+
+        # 1. Check $GIT_MANAGER_CONFIG if set
+        if "GIT_MANAGER_CONFIG" in os.environ:
+            git_manager_config = os.environ["GIT_MANAGER_CONFIG"]
+
+            if os.path.isfile(git_manager_config):
+                return git_manager_config
+
+        # 2. ~/.config/.gitmanager/config (or $XDG_CONFIG_HOME/.gitmanager/config if set)
+        if "XDG_CONFIG_HOME" in os.environ:
+            xdg_config_home = os.environ["XDG_CONFIG_HOME"]
+        else:
+            xdg_config_home = os.path.join(os.path.expanduser("~"), ".config")
+
+        xdg_config_path = os.path.join(xdg_config_home, ".gitmanager", "config")
+        if os.path.isfile(xdg_config_path):
+            return xdg_config_path
+
+        # 3. ~/.gitmanager
+        fallback_path = os.path.join(os.path.expanduser("~"), ".gitmanager")
+        if os.path.isfile(fallback_path):
+            return fallback_path
+
+        # No configuration file found -- raise an error
+        return None
+
+    @staticmethod
     def parse_lines(lines):
         """
         Parses a configuration file
@@ -76,7 +108,7 @@ class Config(object):
                                               if folder is not None else None
 
                 # Find the current working directory
-                cwd = os.path.expanduser(repo_group[0])
+                cwd = repo_group[0]
 
                 # And append the repo
                 REPO_LIST.append((source_uri, cwd, path))

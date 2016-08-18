@@ -1,0 +1,7 @@
+# This is an example configuration file for git-manager
+# See README.md for a more detailed explanation.
+
+# EXAMPLE
+> Projects
+>> tkw1536 https://github.com/tkw1536/%s
+GitManager.git

@@ -36,9 +36,9 @@ def do_clone(repos):
         human = Format.path(folder, t.width - l_fmt_str)
 
         if Git.exist_local(folder):
-            t.write(repo_fmt_str % (i, Format.cyan(human)))
+            t.write(repo_fmt_str % (i + 1, Format.cyan(human)))
         else:
-            t.write((repo_fmt_str % (i, Format.green(human))))
+            t.write((repo_fmt_str % (i + 1, Format.green(human))))
             t.append('\n')
 
             Git.clone(source, cwd, folder)
@@ -50,12 +50,18 @@ def do_clone(repos):
 def do_pull(repos):
     """ Runs the pull command over all repositories. """
 
-    for (source, cwd, name) in repos:
+    (t, repo_fmt_str, l_fmt_str, repo_count) = prepare_terminal_line(repos)
+
+    for (i, (source, cwd, name)) in enumerate(repos):
+
         folder = Git.tuple_to_path(source, cwd, name)
+        human = Format.path(folder, t.width - l_fmt_str)
+
         if not Git.exist_local(folder):
-            print('%s %s -> %s' % (Format.red('pull'), source, folder))
+            t.write(repo_fmt_str % (i + 1, Format.red(human)))
         else:
-            print(Format.green(folder))
+            t.write((repo_fmt_str % (i + 1 , Format.green(human))))
+
             Git.pull(folder)
 
 

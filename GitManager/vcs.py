@@ -1,6 +1,8 @@
 import subprocess
 import os.path
 
+import sys
+
 
 class VCS(object):
     """ A class representing a version control system. """
@@ -223,7 +225,30 @@ class Git(VCS):
         :rtype: bool
         """
 
-        return subprocess.call(["git", "pull"], cwd=path) == 0
+
+        p = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, cwd=path)
+        had_first_line = False
+
+        while True:
+            # read the next line or exit
+            line = p.stdout.readline()
+            if not line: break
+
+            line = line.decode('utf-8') # HACK HACK HACK
+
+            # If the first line is 'Already up-to-date.', surpress it.
+            if not had_first_line:
+                had_first_line = True
+
+
+                if line.strip() != 'Already up-to-date.':
+                    sys.stdout.write('\n')
+                    sys.stdout.write(line)
+            else:
+                sys.stdout.write(line)
+
+
+        return p.returncode == 0
 
     @staticmethod
     def push(path):

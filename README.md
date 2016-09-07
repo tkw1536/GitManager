@@ -9,7 +9,7 @@ Make sure python is installed, then run
 ```bash
 python setup.py install
 ```
-to install the package. This will make it available by running ```git-manager``` or ```git manager```. 
+to install the package. This will make it available by running ```git-manager``` (or ```git manager```). 
 
 ## Configuration
 
@@ -66,10 +66,43 @@ GitManager control. It consists of three different types of directives:
 
 An example configuration file can be found in the file [config_example](config_example). 
 
+## Tests
+All tests are in the tests/ folder. You may run them using
+
+```
+nosetests
+```
+
 ## Usage
 
-TODO: Document this
+Git-Manager has four different commands it provides:
+1. ```git-manager clone``` -- Sets up all repositories as configured in the Configuration file. 
+2. ```git-manager pull``` -- Runs ```git pull``` on all locally installed repositories. 
+3. ```git-manager push```  -- Runs ```git push``` on all locally installed repositories. 
+4. ```git-manager ls``` -- Lists all locally available repositories. 
 
 ## License
 
-TODO: Document this
+```
+The MIT License (MIT)
+
+Copyright (c) 2016 Tom Wiesing
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```

@@ -69,7 +69,7 @@ target/
 # IPython Notebook
 .ipynb_checkpoints
 
-# pyenv
+# pyenvterm
 .python-version
 
 # celery beat schedule file

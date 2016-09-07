@@ -66,17 +66,11 @@ GitManager control. It consists of three different types of directives:
 
 An example configuration file can be found in the file [config_example](config_example). 
 
-## Tests
-All tests are in the tests/ folder. You may run them using
-
-```
-nosetests
-```
-
 ## Usage
 
 Git-Manager has four different commands it provides:
-1. ```git-manager clone``` -- Sets up all repositories as configured in the Configuration file. 
+
+1. ```git-manager clone``` -- Sets up all repositories as configured in the Configuration file.
 2. ```git-manager pull``` -- Runs ```git pull``` on all locally installed repositories. 
 3. ```git-manager push```  -- Runs ```git push``` on all locally installed repositories. 
 4. ```git-manager ls``` -- Lists all locally available repositories. 

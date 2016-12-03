@@ -208,8 +208,8 @@ class Git(VCS):
         full_path = os.path.join(cwd, name)
 
         # Create the cwd if it does not exist
-        if not os.path.isdir(cwd):
-            os.makedirs(cwd)
+        if not os.path.isdir(full_path):
+            os.makedirs(full_path)
 
         return subprocess.call(["git", "clone", src, full_path], cwd=cwd) == 0
 

@@ -80,7 +80,7 @@ Git-Manager has four different commands it provides:
 ```
 The MIT License (MIT)
 
-Copyright (c) 2016 Tom Wiesing
+Copyright (c) 2016-17 Tom Wiesing
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

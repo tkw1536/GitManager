@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 from GitManager.format import Format, TerminalLine
-from GitManager.vcs import Git
+from GitManager.git import Git
 from GitManager.config import Config
 
 import os
 import os.path
+import sys
 
 #
 # Abstractions
@@ -33,7 +34,7 @@ def do_clone(repos):
     for (i, (source, cwd, name)) in enumerate(repos):
 
         folder = Git.tuple_to_path(source, cwd, name)
-        human = Format.path(folder, t.width - l_fmt_str)
+        human = Format.short_path(folder, t.width - l_fmt_str)
 
         if Git.exist_local(folder):
             t.write(repo_fmt_str % (i + 1, Format.cyan(human)))
@@ -55,7 +56,7 @@ def do_pull(repos):
     for (i, (source, cwd, name)) in enumerate(repos):
 
         folder = Git.tuple_to_path(source, cwd, name)
-        human = Format.path(folder, t.width - l_fmt_str)
+        human = Format.short_path(folder, t.width - l_fmt_str)
 
         if not Git.exist_local(folder):
             t.write(repo_fmt_str % (i + 1, Format.red(human)))
@@ -133,5 +134,8 @@ def main(args):
 
     return 0
 
-__all__ = ["main"]
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
 
+
+__all__ = ["main"]

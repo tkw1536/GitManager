@@ -3,7 +3,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2016 Tom Wiesing
+Copyright (c) 2016-17 Tom Wiesing
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ SOFTWARE.
 """
 
 import sys
-from GitManager.main import main
+from GitManager.__main__ import main
 
 if __name__ == '__main__':
     code = main(sys.argv)

@@ -1,6 +1,7 @@
 import re
 import os.path
 
+
 class Config(object):
     """ Methods for parsing and reading configuration file. """
 
@@ -29,7 +30,8 @@ class Config(object):
         else:
             xdg_config_home = os.path.join(os.path.expanduser("~"), ".config")
 
-        xdg_config_path = os.path.join(xdg_config_home, ".gitmanager", "config")
+        xdg_config_path = os.path.join(xdg_config_home, ".gitmanager",
+                                       "config")
         if os.path.isfile(xdg_config_path):
             return xdg_config_path
 
@@ -105,7 +107,7 @@ class Config(object):
                 # And the path to clone to
                 folder = m_repo.group(3) or None
                 path = os.path.expanduser(os.path.join(repo_group[0], folder)) \
-                                              if folder is not None else None
+                    if folder is not None else None
 
                 # Find the current working directory
                 cwd = repo_group[0]
@@ -118,5 +120,6 @@ class Config(object):
             raise Exception('Unable to parse line. ')
 
         return REPO_LIST
+
 
 __all__ = ["Config"]

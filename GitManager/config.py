@@ -24,7 +24,8 @@ class Config(object):
             if os.path.isfile(git_manager_config):
                 return git_manager_config
 
-        # 2. ~/.config/.gitmanager/config (or $XDG_CONFIG_HOME/.gitmanager/config if set)
+        # 2. ~/.config/.gitmanager/config
+        # (or $XDG_CONFIG_HOME/.gitmanager/config if set)
         if "XDG_CONFIG_HOME" in os.environ:
             xdg_config_home = os.environ["XDG_CONFIG_HOME"]
         else:
@@ -106,7 +107,8 @@ class Config(object):
 
                 # And the path to clone to
                 folder = m_repo.group(3) or None
-                path = os.path.expanduser(os.path.join(repo_group[0], folder)) \
+                path = os.path.expanduser(
+                    os.path.join(repo_group[0], folder)) \
                     if folder is not None else None
 
                 # Find the current working directory

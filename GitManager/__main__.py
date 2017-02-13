@@ -8,6 +8,7 @@ import os
 import os.path
 import sys
 
+
 #
 # Abstractions
 #
@@ -61,7 +62,7 @@ def do_pull(repos):
         if not Git.exist_local(folder):
             t.write(repo_fmt_str % (i + 1, Format.red(human)))
         else:
-            t.write((repo_fmt_str % (i + 1 , Format.green(human))))
+            t.write((repo_fmt_str % (i + 1, Format.green(human))))
 
             Git.pull(folder)
 
@@ -85,6 +86,7 @@ def do_ls(repos):
             print(Format.green(folder))
         else:
             print(Format.red(folder))
+
 
 #
 # MAIN ENTRY POINT
@@ -129,13 +131,13 @@ def main(args):
     elif args[1] == 'ls':
         do_ls(repos)
     else:
-        print('Unknown command %r' % (args[1], ))
+        print('Unknown command %r' % (args[1],))
         return 1
 
     return 0
 
+
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
-
 
 __all__ = ["main"]

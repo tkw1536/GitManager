@@ -209,7 +209,7 @@ class TestTerminalLine(unittest.TestCase):
 
     @unittest.mock.patch('sys.stdout')
     def test_append(self,
-                   sys_stdout: unittest.mock.Mock):
+                    sys_stdout: unittest.mock.Mock):
         """ Tests that format.clean works properly """
 
         tl = format.TerminalLine()

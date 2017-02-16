@@ -3,7 +3,7 @@ import unittest.mock
 
 import subprocess
 
-from GitManager import run
+from GitManager.utils import run
 
 
 class TestRun(unittest.TestCase):

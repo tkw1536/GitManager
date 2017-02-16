@@ -86,7 +86,7 @@ class ProcessRun(object):
         return self.__pipe_stdout
 
     @property
-    def stdout(self) -> typing.Optional[typing.IO[str]]:
+    def stdout(self) -> typing.Optional[typing.IO[bytes]]:
         """ the stdout handle of the process or None """
 
         # we need to run the process first
@@ -107,7 +107,7 @@ class ProcessRun(object):
         return self.__pipe_stderr
 
     @property
-    def stderr(self) -> typing.Optional[typing.IO[str]]:
+    def stderr(self) -> typing.Optional[typing.IO[bytes]]:
         """ the stderr handle of the process or None """
 
         # we need to run the process first
@@ -128,7 +128,7 @@ class ProcessRun(object):
         return self.__pipe_stdin
 
     @property
-    def stdin(self) -> typing.Optional[typing.IO[str]]:
+    def stdin(self) -> typing.Optional[typing.IO[bytes]]:
         """ the stdin handle of the process or None """
 
         # we need to run the process first
@@ -229,7 +229,7 @@ class ProcessRun(object):
 
 
 class GitRun(ProcessRun):
-    def __init__(self, *args: typing.List[str],
+    def __init__(self, *args: str,
                  cwd: typing.Optional[str] = None, pipe_stdout: bool = False,
                  pipe_stderr: bool = False, pipe_stdin: bool = False,
                  environment: typing.Optional[dict] = None):

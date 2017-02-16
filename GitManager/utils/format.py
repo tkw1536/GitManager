@@ -182,12 +182,13 @@ class Format(object):
 class TerminalLine(object):
     """ Represents a Terminal Line that can be re-written"""
 
-    def __init__(self):
-        """
-        Creates a new TerminalLine object.
+    def __init__(self, fd=None):
+        """ Creates a new TerminalLine object.
+
+        :param fd: File descriptor of output to use
         """
 
-        self.__fd = sys.stdout
+        self.__fd = sys.stdout if fd is None else fd
 
     @property
     def width(self):
@@ -203,8 +204,16 @@ class TerminalLine(object):
 
         :return:
         """
+        if sys.stdout.isatty():
+            self.append('\r%s\r' % (' ' * self.width))
+        else:
+            self.append('\n')
 
-        self.append('\r%s\r' % (' ' * self.width))
+    def linebreak(self):
+        """ Inserts a LineBreak into this line.
+        """
+
+        self.append('\n')
 
     def write(self, s: str):
         """ Writes a string to this Line, overwriting the current content.

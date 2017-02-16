@@ -3,7 +3,7 @@ import os.path
 import typing
 
 
-class ConfigTree(object):
+class ConfigLine(object):
     """ A single line in the configuration file """
 
     DIRECTIVE_NOP = re.compile(r'^((\s*)#(.*))|(\s*)$')
@@ -12,9 +12,9 @@ class ConfigTree(object):
     DIRECTIVE_REPO = re.compile(r'^(\s*)([^>\s]+)(?:(\s+)([^\s]+))?(\s*)$')
 
     def __init__(self, indent: str):
-        """ Creates a new ConfigTree object
+        """ Creates a new ConfigLine object
 
-        :param indent: The indent of this ConfigTree Line
+        :param indent: The indent of this ConfigLine Line
         """
         self.__indent = indent
 
@@ -29,13 +29,13 @@ class ConfigTree(object):
     @staticmethod
     def parse(s: str):
         """ Parses a string into a ConfigLine
-        :rtype: ConfigTree"""
+        :rtype: ConfigLine"""
 
-        nop_match = ConfigTree.DIRECTIVE_NOP.match(s)
+        nop_match = ConfigLine.DIRECTIVE_NOP.match(s)
         if nop_match:
             return NOPLine(s)
 
-        base_match = ConfigTree.DIRECTIVE_BASE.match(s)
+        base_match = ConfigLine.DIRECTIVE_BASE.match(s)
         if base_match:
             return BaseLine(base_match.group(1), len(base_match.group(2)),
                             base_match.group(3), base_match.group(4),
@@ -43,7 +43,7 @@ class ConfigTree(object):
                             base_match.group(6) or '',
                             base_match.group(7))
 
-        repo_match = ConfigTree.DIRECTIVE_REPO.match(s)
+        repo_match = ConfigLine.DIRECTIVE_REPO.match(s)
         if repo_match:
             return RepoLine(repo_match.group(1), repo_match.group(2),
                             repo_match.group(3) or '',
@@ -53,7 +53,7 @@ class ConfigTree(object):
         raise ValueError("Input does not represent a ConfigLine")
 
 
-class NOPLine(ConfigTree):
+class NOPLine(ConfigLine):
     """ A line without meaning inside the Configuration File """
 
     def __init__(self, line: str):
@@ -78,7 +78,7 @@ class NOPLine(ConfigTree):
         return isinstance(other, NOPLine) and self.content == other.content
 
 
-class BaseLine(ConfigTree):
+class BaseLine(ConfigLine):
     """ A line introducing a new BaseLine """
 
     def __init__(self, indent: str, depth: int, space_1: str, path: str,
@@ -112,25 +112,27 @@ class BaseLine(ConfigTree):
     def write(self) -> str:
         """ Turns this ConfigLine into a string that can be re-parsed """
 
-        return "%s%s%s%s%s%s%s" % (self.indent, ">" * self.depth,
-                                   self.__space_1, self.path,
-                                   self.__space_2, self.repo_pat,
-                                   self.__space_3)
+        return "{}{}{}{}{}{}{}".format(self.indent, ">" * self.depth,
+                                       self.__space_1, self.path,
+                                       self.__space_2, self.repo_pat,
+                                       self.__space_3)
 
     def __eq__(self, other: typing.Any) -> bool:
         """ Checks that this line is equal to another line """
 
-        return isinstance(other, BaseLine) \
-            and self.indent == other.indent\
-            and self.depth == other.depth\
-            and self.__space_1 == other.__space_1\
-            and self.path == other.path\
-            and self.__space_2 == other.__space_2\
-            and self.repo_pat == other.repo_pat\
-            and self.__space_3 == other.__space_3
+        if isinstance(other, BaseLine):
+            return self.indent == other.indent and \
+                   self.depth == other.depth and \
+                   self.__space_1 == other.__space_1 and \
+                   self.path == other.path and \
+                   self.__space_2 == other.__space_2 and \
+                   self.repo_pat == other.repo_pat and \
+                   self.__space_3 == other.__space_3
+
+        return False
 
 
-class RepoLine(ConfigTree):
+class RepoLine(ConfigLine):
     """ a line representing a single repository """
 
     def __init__(self, indent: str, url: str, space_1: str, path: str,
@@ -157,15 +159,17 @@ class RepoLine(ConfigTree):
     def write(self) -> str:
         """ Turns this ConfigLine into a string that can be re-parsed """
 
-        return "%s%s%s%s%s" % (self.indent, self.url, self.__space_1,
-                               self.path, self.__space_2)
+        return "{}{}{}{}{}".format(self.indent, self.url, self.__space_1,
+                                   self.path, self.__space_2)
 
     def __eq__(self, other: typing.Any) -> bool:
         """ Checks that this line is equal to another line """
 
-        return isinstance(other, RepoLine) \
-            and self.indent == other.indent \
-            and self.url == other.url \
-            and self.__space_1 == other.__space_1 \
-            and self.path == other.path \
-            and self.__space_2 == other.__space_2
+        if isinstance(other, RepoLine):
+            return self.indent == other.indent and \
+                   self.url == other.url and \
+                   self.__space_1 == other.__space_1 and \
+                   self.path == other.path and \
+                   self.__space_2 == other.__space_2
+
+        return False

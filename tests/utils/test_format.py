@@ -1,7 +1,7 @@
 import unittest
 import unittest.mock
 
-from GitManager import format
+from GitManager.utils import format
 
 
 class TestFormat(unittest.TestCase):
@@ -186,14 +186,34 @@ class TestTerminalLine(unittest.TestCase):
 
     @unittest.mock.patch.object(format.TerminalLine, 'width', 20)
     @unittest.mock.patch.object(format.TerminalLine, 'append')
+    @unittest.mock.patch('sys.stdout.isatty')
     def test_clean(self,
+                   sys_stdout_isatty: unittest.mock.Mock,
                    format_terminal_line_append: unittest.mock.Mock):
         """ Tests that format.clean works properly """
 
+        # resetting on a tty
+        sys_stdout_isatty.return_value = True
         format.TerminalLine().clean()
-
         format_terminal_line_append.assert_called_with(
             '\r                    \r')
+
+        # resetting on a non tty
+        sys_stdout_isatty.return_value = False
+        format.TerminalLine().clean()
+        format_terminal_line_append.assert_called_with(
+            '\n')
+
+    @unittest.mock.patch.object(format.TerminalLine, 'append')
+    def test_linebreak(self,
+                       format_terminal_line_append: unittest.mock.Mock):
+        """ Tests that format.linebreak works correctly"""
+
+        tl = format.TerminalLine()
+        tl.linebreak()
+
+        format_terminal_line_append.assert_called_with(
+            '\n')
 
     @unittest.mock.patch.object(format.TerminalLine, 'clean')
     @unittest.mock.patch.object(format.TerminalLine, 'append')

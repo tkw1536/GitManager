@@ -25,8 +25,8 @@ SOFTWARE.
 """
 
 import sys
-from GitManager.__main__ import main
+from GitManager import main
 
 if __name__ == '__main__':
-    code = main(sys.argv)
+    code = main.main(sys.argv)
     sys.exit(code)

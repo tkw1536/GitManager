@@ -98,6 +98,12 @@ class LocalRepository(object):
         return run.GitRun("pull", cwd=self.path, pipe_stdin=True,
                           pipe_stdout=True, pipe_stderr=True).success
 
+    def push(self) -> bool:
+        """ Pushes this repository """
+
+        return run.GitRun("push", cwd=self.path, pipe_stdin=True,
+                          pipe_stdout=True, pipe_stderr=True).success
+
     def local_status(self) -> typing.Optional[str]:
         """ Shows status on this git repository
         """

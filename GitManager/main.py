@@ -4,7 +4,7 @@ import argparse
 
 from GitManager.utils import format
 from GitManager.config import file
-from GitManager.commands import status, lister, fetch, setup, pull, state
+from GitManager.commands import status, lister, fetch, setup, pull, state, push
 
 
 def main(args):
@@ -29,7 +29,8 @@ def main(args):
 def real_main(args):
     """ Main entry point for the program -- may throw errors"""
 
-    ACTIONS = ['help', 'setup', 'fetch', 'pull', 'ls', 'status', 'state']
+    ACTIONS = ['help', 'setup', 'fetch', 'pull', 'push', 'ls', 'status',
+               'state']
 
     # Create an argument parser
     parser = argparse.ArgumentParser(add_help=False)
@@ -68,6 +69,9 @@ def real_main(args):
         fetch.Fetch(line, repos, *command_args)()
     elif args.action == 'pull':
         pull.Pull(line, repos, *command_args)()
+
+    elif args.action == 'push':
+        push.Push(line, repos, *command_args)()
 
     elif args.action == 'ls':
         lister.LsLocal(line, repos, *command_args)()

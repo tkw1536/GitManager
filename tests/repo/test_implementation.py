@@ -195,7 +195,7 @@ class TestLocalRepository(unittest.TestCase):
 
     @unittest.mock.patch('GitManager.utils.run.GitRun')
     def test_pull(self, run_gitrun: unittest.mock.Mock):
-        """ checks that fetch method makes an external call """
+        """ checks that pull method makes an external call """
 
         # create a repository
         repo = implementation.LocalRepository('/path/to/repository')
@@ -203,17 +203,35 @@ class TestLocalRepository(unittest.TestCase):
         # and make sure that the return value is True
         run_gitrun.success = True
 
-        # assert that we can fetch
+        # assert that we can pull
         self.assertTrue(repo.pull(), 'pulling a repository')
 
-        # check that we called the fetch --all command properly
+        # check that we called the pull command properly
         run_gitrun.assert_called_with('pull', cwd='/path/to/repository',
                                       pipe_stderr=True, pipe_stdin=True,
                                       pipe_stdout=True)
 
     @unittest.mock.patch('GitManager.utils.run.GitRun')
+    def test_push(self, run_gitrun: unittest.mock.Mock):
+        """ checks that push method makes an external call """
+
+        # create a repository
+        repo = implementation.LocalRepository('/path/to/repository')
+
+        # and make sure that the return value is True
+        run_gitrun.success = True
+
+        # assert that we can push
+        self.assertTrue(repo.push(), 'push a repository')
+
+        # check that we called the push command properly
+        run_gitrun.assert_called_with('push', cwd='/path/to/repository',
+                                      pipe_stderr=True, pipe_stdin=True,
+                                      pipe_stdout=True)
+
+    @unittest.mock.patch('GitManager.utils.run.GitRun')
     def test_local_status(self, run_gitrun: unittest.mock.Mock):
-        """ checks that fetch method makes an external call """
+        """ checks that local_status method makes an external call """
 
         # create a repository
         repo = implementation.LocalRepository('/path/to/repository')

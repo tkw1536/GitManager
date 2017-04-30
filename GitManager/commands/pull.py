@@ -17,4 +17,5 @@ class Pull(Command):
         if not repo.local.exists():
             return False
 
+        self.line.linebreak()
         return repo.local.pull()

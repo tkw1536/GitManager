@@ -1,8 +1,16 @@
 import os
-
+import enum
 import typing
 
 from ..utils import run
+
+
+class RemoteStatus(enum.Enum):
+    """ Remote uplink status"""
+    UP_TO_DATE = "ok"
+    REMOTE_NEWER = "pull"
+    LOCAL_NEWER = "push"
+    DIVERGENCE = "divergence"
 
 
 class LocalRepository(object):
@@ -35,7 +43,7 @@ class LocalRepository(object):
         :param ref: Ref to get upstream of.
         """
 
-        refs = run.GitRun("for-each-ref", "--format='%(upstream:short)'", ref,
+        refs = run.GitRun("for-each-ref", "--format=%(upstream:short)", ref,
                           cwd=self.path)
         refs.wait()
 
@@ -104,7 +112,7 @@ class LocalRepository(object):
         # return the porcelain info
         return cmd.stdout.read().decode("utf-8")
 
-    def remote_status(self) -> typing.Optional[str]:
+    def remote_status(self) -> typing.Optional[RemoteStatus]:
         """ Shows status on this repository, and in particular if it i
         out-of-date with the remote
         """
@@ -126,20 +134,20 @@ class LocalRepository(object):
         baseref = refs.stdout.read().decode("utf-8").split("\n")[0]
 
         # if both references are identical, we are ok
-        if localref == baseref:
-            return "ok"
+        if localref == remoteref:
+            return RemoteStatus.UP_TO_DATE
 
         # if we would start with the local base, we would have to pull
         elif localref == baseref:
-            return "pull"
+            return RemoteStatus.REMOTE_NEWER
 
         # if we would start with the remote base, we would have to push
         elif remoteref == baseref:
-            return "push"
+            return RemoteStatus.LOCAL_NEWER
 
         # else we have divergence and something is wrong.
         else:
-            return "divergence"
+            return RemoteStatus.DIVERGENCE
 
 
 class RemoteRepository(object):

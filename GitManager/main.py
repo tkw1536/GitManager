@@ -2,7 +2,7 @@
 
 from GitManager.utils import format
 from GitManager.config import file
-from GitManager.commands import status, lister, fetch, setup, pull
+from GitManager.commands import status, lister, fetch, setup, pull, state
 
 
 #
@@ -36,7 +36,7 @@ def real_main(args):
     if len(args) <= 1:
         print(
             format.Format.red("Too few arguments. Usage: %s"
-                              "setup|fetch|pull|ls|status"
+                              "setup|fetch|pull|ls|status|state"
                               % (args[0])))
         return 1
 
@@ -71,6 +71,8 @@ def real_main(args):
         lister.LsLocal(line, repos)()
     elif args[1] == 'status':
         status.Status(line, repos)()
+    elif args[1] == 'state':
+        state.State(line, repos)()
     else:
         print('Unknown command %r' % (args[1],))
         return 1

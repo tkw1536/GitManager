@@ -169,7 +169,7 @@ class TestLocalRepository(unittest.TestCase):
                          "parsing upstream ref works properly")
 
         run_gitrun.assert_called_with("for-each-ref",
-                                      "--format='%(upstream:short)'",
+                                      "--format=%(upstream:short)",
                                       "refs/heads/master",
                                       cwd='/path/to/repository')
         run_gitrun.return_value.wait.assert_called_with()
@@ -241,6 +241,108 @@ class TestLocalRepository(unittest.TestCase):
         # check that we called the status command
         run_gitrun.assert_called_with('status', '--porcelain',
                                       cwd='/path/to/repository')
+
+    @unittest.mock.patch('GitManager.utils.run.GitRun')
+    @unittest.mock.patch(
+        'GitManager.repo.implementation.LocalRepository.ref_parse',
+        side_effect=["aaaaaa", "bbbbbb", "aaaaaa", "bbbbbb", "aaaaaa",
+                     "bbbbbb", "aaaaaa", "bbbbbb"]
+    )
+    @unittest.mock.patch(
+        'GitManager.repo.implementation.LocalRepository.upstream_ref',
+        side_effect=["origin/master", "origin/master", "origin/master",
+                     "origin/master"]
+    )
+    @unittest.mock.patch(
+        'GitManager.repo.implementation.LocalRepository.symbolic_ref',
+        side_effect=["refs/heads/master", "refs/heads/master",
+                     "refs/heads/master", "refs/heads/master"]
+    )
+    @unittest.mock.patch(
+        'GitManager.repo.implementation.LocalRepository.exists'
+    )
+    def test_remote_status(self,
+                           LocalRepository_exists: unittest.mock.Mock,
+                           LocalRepository_symbolic_ref: unittest.mock.Mock,
+                           LocalRepository_upstream_ref: unittest.mock.Mock,
+                           LocalRepository_ref_parse: unittest.mock.Mock,
+                           run_gitrun: unittest.mock.Mock):
+        """ Tests that the remote_status command works properly """
+
+        # create a repository
+        repo = implementation.LocalRepository('/path/to/repository')
+
+        # merge base is aaaaaa (local)
+        LocalRepository_exists.return_value = False
+        self.assertEqual(repo.remote_status(), None)
+
+        # reset all the mocks
+        LocalRepository_exists.reset_mock()
+        LocalRepository_symbolic_ref.reset_mock()
+        LocalRepository_upstream_ref.reset_mock()
+        LocalRepository_ref_parse.reset_mock()
+        run_gitrun.reset_mock()
+
+        # merge base is local
+        LocalRepository_exists.return_value = True
+        run_gitrun.return_value.stdout = unittest.mock.mock_open(
+            read_data="aaaaaa\n".encode("utf-8"))()
+
+        self.assertEqual(repo.remote_status(),
+                         implementation.RemoteStatus.REMOTE_NEWER)
+        run_gitrun.assert_called_with("merge-base", "aaaaaa", "bbbbbb",
+                                      cwd="/path/to/repository")
+        # reset all the mocks
+        LocalRepository_exists.reset_mock()
+        LocalRepository_symbolic_ref.reset_mock()
+        LocalRepository_upstream_ref.reset_mock()
+        LocalRepository_ref_parse.reset_mock()
+        run_gitrun.reset_mock()
+
+        # merge base is local
+        LocalRepository_exists.return_value = True
+        run_gitrun.return_value.stdout = unittest.mock.mock_open(
+            read_data="bbbbbb\n".encode("utf-8"))()
+
+        self.assertEqual(repo.remote_status(),
+                         implementation.RemoteStatus.LOCAL_NEWER)
+        run_gitrun.assert_called_with("merge-base", "aaaaaa", "bbbbbb",
+                                      cwd="/path/to/repository")
+
+        # reset all the mocks
+        LocalRepository_exists.reset_mock()
+        LocalRepository_symbolic_ref.reset_mock()
+        LocalRepository_upstream_ref.reset_mock()
+        LocalRepository_ref_parse.reset_mock()
+        run_gitrun.reset_mock()
+
+        # merge base is ????
+        LocalRepository_exists.return_value = True
+        run_gitrun.return_value.stdout = unittest.mock.mock_open(
+            read_data="cccccc\n".encode("utf-8"))()
+
+        self.assertEqual(repo.remote_status(),
+                         implementation.RemoteStatus.DIVERGENCE)
+        run_gitrun.assert_called_with("merge-base", "aaaaaa", "bbbbbb",
+                                      cwd="/path/to/repository")
+
+        # reset all the mocks
+        LocalRepository_exists.reset_mock()
+        LocalRepository_symbolic_ref.reset_mock()
+        LocalRepository_upstream_ref.reset_mock()
+        LocalRepository_ref_parse.reset_mock()
+        run_gitrun.reset_mock()
+
+        # both refs are equal
+        LocalRepository_ref_parse.side_effect = ["aaaaaa", "aaaaaa"]
+        LocalRepository_exists.return_value = True
+        run_gitrun.return_value.stdout = unittest.mock.mock_open(
+            read_data="aaaaaa\n".encode("utf-8"))()
+
+        self.assertEqual(repo.remote_status(),
+                         implementation.RemoteStatus.UP_TO_DATE)
+        run_gitrun.assert_called_with("merge-base", "aaaaaa", "aaaaaa",
+                                      cwd="/path/to/repository")
 
 
 class TestRemoteRepository(unittest.TestCase):

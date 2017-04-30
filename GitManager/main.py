@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 
+import argparse
+
 from GitManager.utils import format
 from GitManager.config import file
 from GitManager.commands import status, lister, fetch, setup, pull, state
-
-
-#
-# MAIN ENTRY POINT
-#
 
 
 def main(args):
@@ -32,13 +29,15 @@ def main(args):
 def real_main(args):
     """ Main entry point for the program -- may throw errors"""
 
-    # Warn if we do not have anything to do
-    if len(args) <= 1:
-        print(
-            format.Format.red("Too few arguments. Usage: %s"
-                              "setup|fetch|pull|ls|status|state"
-                              % (args[0])))
-        return 1
+    ACTIONS = ['help', 'setup', 'fetch', 'pull', 'ls', 'status', 'state']
+
+    # Create an argument parser
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("action", nargs='?',
+                        help="Action to perform. One of '{}'. ".format(
+                            "', '".join(ACTIONS)))
+
+    args, command_args = parser.parse_known_args()
 
     # Find the configuration file
     cfg_file = file.File.find()
@@ -59,22 +58,25 @@ def real_main(args):
     line = format.TerminalLine()
     repos = list(config.descriptions)
 
-    if args[1] == 'setup':
-        setup.Setup(line, repos, *args[1:])()
+    if args.action == 'help' or args.action is None:
+        parser.print_help()
 
-    elif args[1] == 'fetch':
-        fetch.Fetch(line, repos, *args[1:])()
-    elif args[1] == 'pull':
-        pull.Pull(line, repos, *args[1:])()
+    elif args.action == 'setup':
+        setup.Setup(line, repos, *command_args)()
 
-    elif args[1] == 'ls':
-        lister.LsLocal(line, repos, *args[1:])()
-    elif args[1] == 'status':
-        status.Status(line, repos, *args[1:])()
-    elif args[1] == 'state':
-        state.State(line, repos, *args[1:])()
+    elif args.action == 'fetch':
+        fetch.Fetch(line, repos, *command_args)()
+    elif args.action == 'pull':
+        pull.Pull(line, repos, *command_args)()
+
+    elif args.action == 'ls':
+        lister.LsLocal(line, repos, *command_args)()
+    elif args.action == 'status':
+        status.Status(line, repos, *command_args)()
+    elif args.action == 'state':
+        state.State(line, repos, *command_args)()
     else:
-        print('Unknown command %r' % (args[1],))
+        print('Unknown command %r' % (args.action,))
         return 1
 
     return 0

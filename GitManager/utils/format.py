@@ -189,6 +189,7 @@ class TerminalLine(object):
         """
 
         self.__fd = sys.stdout if fd is None else fd
+        self.__cache = ""
 
     @property
     def width(self):
@@ -204,10 +205,11 @@ class TerminalLine(object):
 
         :return:
         """
-        if sys.stdout.isatty():
+
+        if self.__fd.isatty():
             self.append('\r%s\r' % (' ' * self.width))
         else:
-            self.append('\n')
+            self.__cache = ""
 
     def linebreak(self):
         """ Inserts a LineBreak into this line.
@@ -228,7 +230,26 @@ class TerminalLine(object):
     def append(self, s: str):
         """ Appends text to this TermminalLine instance. """
 
-        self.__fd.write(s)
+        # either write it out directly
+        if self.__fd.isatty():
+            self.__fd.write(s)
+        else:
+            self.__cache += s
+
+        # and flush the content
+        self.flush()
+
+    def flush(self):
+        """Flushes this TerminalLine. """
+
+        # if we are not a terminal, we flush existing lines
+        if not self.__fd.isatty():
+            while "\n" in self.__cache:
+                idx = self.__cache.index('\n')
+                self.__fd.write(self.__cache[:idx + 1])
+                self.__cache = self.__cache[idx + 1:]
+
+        # call the underlying flush implementation
         self.__fd.flush()
 
 

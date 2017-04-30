@@ -198,11 +198,16 @@ class TestTerminalLine(unittest.TestCase):
         format_terminal_line_append.assert_called_with(
             '\r                    \r')
 
+        # reset all the things
+        sys_stdout_isatty.reset_mock()
+        format_terminal_line_append.reset_mock()
+
         # resetting on a non tty
         sys_stdout_isatty.return_value = False
-        format.TerminalLine().clean()
-        format_terminal_line_append.assert_called_with(
-            '\n')
+        line = format.TerminalLine()
+        line.clean()
+        format_terminal_line_append.assert_not_called()
+        self.assertEqual(line._TerminalLine__cache, '')
 
     @unittest.mock.patch.object(format.TerminalLine, 'append')
     def test_linebreak(self,
@@ -220,7 +225,7 @@ class TestTerminalLine(unittest.TestCase):
     def test_write(self,
                    format_terminal_line_append: unittest.mock.Mock,
                    format_terminal_line_clean: unittest.mock.Mock):
-        """ Tests that format.clean works properly """
+        """ Tests that format.write works properly """
 
         format.TerminalLine().write('Hello world')
 
@@ -228,12 +233,66 @@ class TestTerminalLine(unittest.TestCase):
         format_terminal_line_append.assert_called_with('Hello world')
 
     @unittest.mock.patch('sys.stdout')
+    @unittest.mock.patch.object(format.TerminalLine, 'flush')
     def test_append(self,
+                    TerminalLine_flush: unittest.mock.Mock,
                     sys_stdout: unittest.mock.Mock):
-        """ Tests that format.clean works properly """
+        """ Tests that format.append works properly """
 
+        # appending on a tty
+        sys_stdout.isatty.return_value = True
+
+        # make a terminal line and write hello world
         tl = format.TerminalLine()
         tl.append('Hello world')
 
         sys_stdout.write.assert_called_with('Hello world')
+        TerminalLine_flush.assert_called_with()
+        self.assertEqual(tl._TerminalLine__cache, "")
+
+        # reset all the mocks
+        TerminalLine_flush.reset_mock()
+        sys_stdout.reset_mock()
+
+        # appending on a non-tty
+        sys_stdout.isatty.return_value = False
+
+        # make a terminal line and write hello world
+        tl = format.TerminalLine()
+        tl.append('Hello world')
+
+        sys_stdout.write.assert_not_called()
+        TerminalLine_flush.assert_called_with()
+        self.assertEqual(tl._TerminalLine__cache, "Hello world")
+
+        # reset all the mocks
+        TerminalLine_flush.reset_mock()
+        sys_stdout.reset_mock()
+
+    @unittest.mock.patch('sys.stdout')
+    def test_flush(self, sys_stdout: unittest.mock.Mock):
+        # appending on a tty
+        sys_stdout.isatty.return_value = True
+
+        # make a terminal line and write hello world
+        tl = format.TerminalLine()
+        tl._TerminalLine__cache = "Hello\nWorld"
+        tl.flush()
+
+        sys_stdout.write.assert_not_called()
         sys_stdout.flush.assert_called_with()
+
+        # reset all the mocks
+        sys_stdout.reset_mock()
+
+        # appending on a non-tty
+        sys_stdout.isatty.return_value = False
+
+        # make a terminal line and write hello world
+        tl = format.TerminalLine()
+        tl._TerminalLine__cache = "Hello\nWorld"
+        tl.flush()
+
+        sys_stdout.write.assert_called_with("Hello\n")
+        sys_stdout.flush.assert_called_with()
+        self.assertEqual(tl._TerminalLine__cache, "World")

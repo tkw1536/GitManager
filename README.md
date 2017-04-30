@@ -2,7 +2,8 @@
 
 [![Build Status](https://travis-ci.org/tkw1536/GitManager.svg?branch=master)](https://travis-ci.org/tkw1536/GitManager)
 
-A script that can handle multiple Git repositories locally. 
+A script that can handle multiple Git repositories locally.
+Written in Python, supports version 3.5 and upwards.
 
 ## Installation
 

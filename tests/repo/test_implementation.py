@@ -246,17 +246,18 @@ class TestLocalRepository(unittest.TestCase):
     @unittest.mock.patch(
         'GitManager.repo.implementation.LocalRepository.ref_parse',
         side_effect=["aaaaaa", "bbbbbb", "aaaaaa", "bbbbbb", "aaaaaa",
-                     "bbbbbb", "aaaaaa", "bbbbbb"]
+                     "bbbbbb", "aaaaaa", "bbbbbb", "aaaaaa", "bbbbbb"]
     )
     @unittest.mock.patch(
         'GitManager.repo.implementation.LocalRepository.upstream_ref',
         side_effect=["origin/master", "origin/master", "origin/master",
-                     "origin/master"]
+                     "origin/master", "origin/master"]
     )
     @unittest.mock.patch(
         'GitManager.repo.implementation.LocalRepository.symbolic_ref',
         side_effect=["refs/heads/master", "refs/heads/master",
-                     "refs/heads/master", "refs/heads/master"]
+                     "refs/heads/master", "refs/heads/master",
+                     "refs/heads/master"]
     )
     @unittest.mock.patch(
         'GitManager.repo.implementation.LocalRepository.exists'
@@ -271,6 +272,20 @@ class TestLocalRepository(unittest.TestCase):
 
         # create a repository
         repo = implementation.LocalRepository('/path/to/repository')
+
+        # if we want to update, we should have called with 'remote' 'update'
+        run_gitrun.return_value.success = False
+        self.assertEqual(repo.remote_status(update=True), None)
+        run_gitrun.assert_called_with('remote', 'update',
+                                      cwd='/path/to/repository')
+
+        # reset all the mocks
+        LocalRepository_exists.reset_mock()
+        LocalRepository_symbolic_ref.reset_mock()
+        LocalRepository_upstream_ref.reset_mock()
+        LocalRepository_ref_parse.reset_mock()
+        run_gitrun.reset_mock()
+        run_gitrun.return_value.success = True
 
         # merge base is aaaaaa (local)
         LocalRepository_exists.return_value = False
@@ -288,7 +303,7 @@ class TestLocalRepository(unittest.TestCase):
         run_gitrun.return_value.stdout = unittest.mock.mock_open(
             read_data="aaaaaa\n".encode("utf-8"))()
 
-        self.assertEqual(repo.remote_status(),
+        self.assertEqual(repo.remote_status(update=False),
                          implementation.RemoteStatus.REMOTE_NEWER)
         run_gitrun.assert_called_with("merge-base", "aaaaaa", "bbbbbb",
                                       cwd="/path/to/repository")
@@ -321,7 +336,7 @@ class TestLocalRepository(unittest.TestCase):
         run_gitrun.return_value.stdout = unittest.mock.mock_open(
             read_data="cccccc\n".encode("utf-8"))()
 
-        self.assertEqual(repo.remote_status(),
+        self.assertEqual(repo.remote_status(update=False),
                          implementation.RemoteStatus.DIVERGENCE)
         run_gitrun.assert_called_with("merge-base", "aaaaaa", "bbbbbb",
                                       cwd="/path/to/repository")
@@ -339,7 +354,7 @@ class TestLocalRepository(unittest.TestCase):
         run_gitrun.return_value.stdout = unittest.mock.mock_open(
             read_data="aaaaaa\n".encode("utf-8"))()
 
-        self.assertEqual(repo.remote_status(),
+        self.assertEqual(repo.remote_status(update=False),
                          implementation.RemoteStatus.UP_TO_DATE)
         run_gitrun.assert_called_with("merge-base", "aaaaaa", "aaaaaa",
                                       cwd="/path/to/repository")

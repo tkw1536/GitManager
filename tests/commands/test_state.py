@@ -21,9 +21,27 @@ class TestState(unittest.TestCase):
         repo = description.RepositoryDescription('/path/to/source',
                                                  '/path/to/clone')
 
-        # create a command instance
+        # create a line
         line = format.TerminalLine()
-        cmd = state.State(line, [repo])
+
+        # and a command instance
+        cmd = state.State(line, [repo], "--no-update")
+
+        # if we are up-to-date, nothing should have been printed
+        implementation_LocalRepository.return_value.exists.return_value = True
+        implementation_LocalRepository.return_value.remote_status \
+            .return_value = implementation.RemoteStatus.UP_TO_DATE
+        self.assertTrue(cmd.run(repo))
+        implementation_LocalRepository.return_value.remote_status \
+            .assert_called_with(False)
+        builtins_print.assert_not_called()
+
+        # reset the mock
+        implementation_LocalRepository.reset_mock()
+        builtins_print.reset_mock()
+
+        # create another command instance
+        cmd = state.State(line, [repo], "--update")
 
         # if the local repository does not exist, we
         implementation_LocalRepository.return_value.exists.return_value = False
@@ -38,6 +56,8 @@ class TestState(unittest.TestCase):
         implementation_LocalRepository.return_value.remote_status \
             .return_value = implementation.RemoteStatus.UP_TO_DATE
         self.assertTrue(cmd.run(repo))
+        implementation_LocalRepository.return_value.remote_status\
+            .assert_called_with(True)
         builtins_print.assert_not_called()
 
         # reset the mock
@@ -49,6 +69,8 @@ class TestState(unittest.TestCase):
         implementation_LocalRepository.return_value.remote_status \
             .return_value = implementation.RemoteStatus.REMOTE_NEWER
         self.assertFalse(cmd.run(repo))
+        implementation_LocalRepository.return_value.remote_status \
+            .assert_called_with(True)
         builtins_print.assert_called_with(
             format.Format.yellow('Upstream is ahead of your branch, '
                                  'pull required. '))
@@ -62,6 +84,8 @@ class TestState(unittest.TestCase):
         implementation_LocalRepository.return_value.remote_status \
             .return_value = implementation.RemoteStatus.LOCAL_NEWER
         self.assertFalse(cmd.run(repo))
+        implementation_LocalRepository.return_value.remote_status \
+            .assert_called_with(True)
         builtins_print.assert_called_with(
             format.Format.green('Your branch is ahead of upstream, '
                                 'push required.'))
@@ -75,6 +99,8 @@ class TestState(unittest.TestCase):
         implementation_LocalRepository.return_value.remote_status \
             .return_value = implementation.RemoteStatus.DIVERGENCE
         self.assertFalse(cmd.run(repo))
+        implementation_LocalRepository.return_value.remote_status \
+            .assert_called_with(True)
         builtins_print.assert_called_with(
             format.Format.red('Your branch and upstream have diverged, '
                               'merge or rebase required. '))

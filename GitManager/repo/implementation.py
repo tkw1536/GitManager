@@ -112,14 +112,22 @@ class LocalRepository(object):
         # return the porcelain info
         return cmd.stdout.read().decode("utf-8")
 
-    def remote_status(self) -> typing.Optional[RemoteStatus]:
+    def remote_status(self, update=False) -> typing.Optional[RemoteStatus]:
         """ Shows status on this repository, and in particular if it i
         out-of-date with the remote
+
+        :param update: Boolean indicating if we should update using git
+        remote update first
         """
 
         # if we do not exist, return
         if not self.exists():
             return None
+
+        # if we should update, run git remote update
+        if update:
+            if not run.GitRun("remote", "update", cwd=self.path).success:
+                return None
 
         # where is head pointing to?
         localref = self.ref_parse("HEAD")

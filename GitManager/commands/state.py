@@ -1,4 +1,5 @@
 import typing
+import argparse
 
 from ..repo import description
 from ..repo import implementation
@@ -12,14 +13,27 @@ class State(Command):
 
     def parse(self, *args: str) -> typing.Any:
         """ Parses arguments given to this Command """
-        pass
+        parser = argparse.ArgumentParser(prog='git-manager state')
+
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument('--update', dest='update',
+                           action='store_true', default=True,
+                           help='Update remote references using \'git '
+                                'remote update\' before showing status. '
+                                'Enabled by default.  ')
+        group.add_argument('--no-update', dest='update',
+                           action='store_false',
+                           help='DO NOT update remote references using '
+                                '\'git remote update\' '
+                                'before showing status. ')
+        return parser.parse_args(args)
 
     def run(self, repo: description.RepositoryDescription) -> bool:
 
         if not repo.local.exists():
             return False
 
-        status = repo.local.remote_status()
+        status = repo.local.remote_status(self.args.update)
 
         if status == implementation.RemoteStatus.REMOTE_NEWER:
             self.line.linebreak()

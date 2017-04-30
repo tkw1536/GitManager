@@ -1,5 +1,7 @@
 # GitManager
 
+[![Build Status](https://travis-ci.org/tkw1536/GitManager.svg?branch=master)](https://travis-ci.org/tkw1536/GitManager)
+
 A script that can handle multiple Git repositories locally. 
 
 ## Installation

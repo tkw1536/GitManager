@@ -14,6 +14,21 @@ python setup.py install
 ```
 to install the package. This will make it available by running ```git-manager``` (or ```git manager```). 
 
+## Usage
+
+Git-Manager has different commands it provides:
+
+1. ```git-manager setup``` -- Sets up all repositories as configured in the Configuration file.
+2. ```git-manager fetch``` -- Updates all local repositories by fetching all
+ data from the remotes.
+3. ```git-manager pull``` -- Updates all local repositories by pulling all
+repositories.
+4. ```git-manager ls``` -- Lists all locally available repositories.
+5. ```git-manager status``` -- Shows all repositories that do not have a
+clean working tree, i.e. those where ```git status``` shows a message.
+5. ```git-manager state``` -- Shows all repositories for which the local
+branch is not equal to the remote branch.
+
 ## Configuration
 
 Git Manager can be configured through its configuration file. 
@@ -63,26 +78,22 @@ GitManager control. It consists of three different types of directives:
        markdown-preview
        # ...
      ```
-    Groups completly support nesting. A sub-groups path and pattern for origin are relative to 
+    Groups completely support nesting. A sub-groups path and pattern for origin are relative to
     the parent group. To create a sub-group, add another ">" character in front of the line. 
 
 
-An example configuration file can be found in the file [config_example](config_example). 
+An example configuration file can be found in the file [config_example](config_example).
 
-## Usage
+## Development and Testing
 
-Git-Manager has different commands it provides:
+This project is unit tested with a high coverage rate.
+The tests can be run with:
 
-1. ```git-manager setup``` -- Sets up all repositories as configured in the Configuration file.
-2. ```git-manager fetch``` -- Updates all local repositories by fetching all
- data from the remotes.
-3. ```git-manager pull``` -- Updates all local repositories by pulling all
-repositories.
-4. ```git-manager ls``` -- Lists all locally available repositories.
-5. ```git-manager status``` -- Shows all repositories that do not have a
-clean working tree, i.e. those where ```git status``` shows a message.
-5. ```git-manager state``` -- Shows all repositories for which the local
-branch is not equal to the remote branch.
+```bash
+    nosetests --with-coverage --cover-package GitManager
+```
+
+Tests are automatically run on Travis CI after every commit.
 
 ## License
 

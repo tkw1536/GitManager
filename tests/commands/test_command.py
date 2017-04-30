@@ -13,7 +13,9 @@ class TestCommand(unittest.TestCase):
         'GitManager.repo.implementation.LocalRepository.exists',
         side_effect=[True, False])
     @unittest.mock.patch('GitManager.utils.format.TerminalLine')
-    def test_repos(self, format_TerminalLine: unittest.mock.Mock,
+    @unittest.mock.patch('GitManager.commands.Command.parse')
+    def test_repos(self, command_parse: unittest.mock.Mock,
+                   format_TerminalLine: unittest.mock.Mock,
                    implementation_exists: unittest.mock.Mock):
         """ Tests that the list of repos works properly """
 
@@ -39,7 +41,35 @@ class TestCommand(unittest.TestCase):
             self.assertEqual(cmd.repos, repos)
 
     @unittest.mock.patch('GitManager.utils.format.TerminalLine')
-    def test_run(self, format_TerminalLine: unittest.mock.Mock):
+    @unittest.mock.patch('GitManager.commands.Command.parse')
+    def test_args(self, command_parse: unittest.mock.Mock,
+                  format_TerminalLine: unittest.mock.Mock):
+        """ Checks that the args property is implemented properly"""
+
+        line = format.TerminalLine()
+        repos = []
+
+        # create a command object
+        cmd = commands.Command(line, repos, "1", "2", "3")
+
+        command_parse.assert_called_with("1", "2", "3")
+        self.assertEqual(cmd.args, command_parse.return_value)
+
+    @unittest.mock.patch('GitManager.utils.format.TerminalLine')
+    def test_parse(self, format_TerminalLine: unittest.mock.Mock):
+        """ Checks that the parse method is not Implemented """
+
+        line = format.TerminalLine()
+        repos = []
+
+        # create a command object
+        with self.assertRaises(NotImplementedError):
+            commands.Command(line, repos)
+
+    @unittest.mock.patch('GitManager.utils.format.TerminalLine')
+    @unittest.mock.patch('GitManager.commands.Command.parse')
+    def test_run(self, command_parse: unittest.mock.Mock,
+                 format_TerminalLine: unittest.mock.Mock):
         """ Tests that the run() method is not implemented. """
 
         # create a magic line object
@@ -56,7 +86,9 @@ class TestCommand(unittest.TestCase):
 
     @unittest.mock.patch('builtins.print')
     @unittest.mock.patch('GitManager.utils.format.TerminalLine')
-    def test_write(self, format_TerminalLine: unittest.mock.Mock,
+    @unittest.mock.patch('GitManager.commands.Command.parse')
+    def test_write(self, command_parse: unittest.mock.Mock,
+                   format_TerminalLine: unittest.mock.Mock,
                    builtins_print: unittest.mock.Mock):
         """ Tests that the write function works properly. """
 
@@ -74,7 +106,8 @@ class TestCommand(unittest.TestCase):
         builtins_print.assert_called_with("Hello world")
 
     @unittest.mock.patch('GitManager.utils.format.TerminalLine')
-    def test_write_with_counter(self,
+    @unittest.mock.patch('GitManager.commands.Command.parse')
+    def test_write_with_counter(self, command_parse: unittest.mock.Mock,
                                 format_TerminalLine: unittest.mock.Mock):
         """ Tests that the write_with_counter function works correctly"""
 
@@ -115,7 +148,9 @@ class TestCommand(unittest.TestCase):
             .assert_called_with("[03/11] SOME TEXT")
 
     @unittest.mock.patch('GitManager.utils.format.TerminalLine')
+    @unittest.mock.patch('GitManager.commands.Command.parse')
     def test_write_path_with_counter(self,
+                                     command_parse: unittest.mock.Mock,
                                      format_TerminalLine: unittest.mock.Mock):
         """ Tests that the write_with_counter function works correctly"""
 
@@ -158,7 +193,9 @@ class TestCommand(unittest.TestCase):
     @unittest.mock.patch('GitManager.utils.format.TerminalLine')
     @unittest.mock.patch('GitManager.commands.Command.write_path_with_counter')
     @unittest.mock.patch('GitManager.commands.Command.run', return_value=True)
+    @unittest.mock.patch('GitManager.commands.Command.parse')
     def test_call(self,
+                  command_parse: unittest.mock.Mock,
                   command_run: unittest.mock.Mock,
                   command_write_path_with_counter: unittest.mock.Mock,
                   format_TerminalLine: unittest.mock.Mock):

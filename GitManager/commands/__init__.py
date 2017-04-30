@@ -13,13 +13,25 @@ class Command(object):
     LOCAL = False
 
     def __init__(self, line: format.TerminalLine,
-                 repos: List[description.RepositoryDescription]):
+                 repos: List[description.RepositoryDescription],
+                 *args: str):
         self.__line = line
         self.__repos = repos
+        self.__args = self.parse(*args)
 
         # current state when running this command
         self.__idx = None
         self.__repo = None
+
+    def parse(self, *args: str) -> typing.Any:
+        """ Parses arguments given to this Command """
+
+        raise NotImplementedError
+
+    @property
+    def args(self) -> typing.Any:
+        """ Arguments passed to this instance"""
+        return self.__args
 
     @property
     def repos(self) -> List[description.RepositoryDescription]:
@@ -37,7 +49,8 @@ class Command(object):
     def line(self) -> format.TerminalLine:
         return self.__line
 
-    def run(self, repo: description.RepositoryDescription) -> bool:
+    def run(self, repo: description.RepositoryDescription) \
+            -> bool:
         """ Runs this Command on a given repository """
 
         raise NotImplementedError
@@ -79,7 +92,8 @@ class Command(object):
         message = format.Format.short_path(path, self.line.width - len(prefix))
         self.write_with_counter(message)
 
-    def __call__(self) -> int:
+    def __call__(self, *args: str) -> int:
+        """ Runs this command on a set of repositories """
         counter = 0
         for (i, repo) in enumerate(self.repos):
             self.__idx = i

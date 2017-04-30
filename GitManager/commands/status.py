@@ -1,3 +1,5 @@
+import typing
+
 from ..repo import description
 from ..utils import run
 from . import Command
@@ -6,6 +8,10 @@ from . import Command
 class Status(Command):
     """ Checks that status of all repositories """
     LOCAL = True
+
+    def parse(self, *args: str) -> typing.Any:
+        """ Parses arguments given to this Command """
+        pass
 
     def run(self, repo: description.RepositoryDescription) -> bool:
 

@@ -1,3 +1,5 @@
+import typing
+
 from ..repo import description
 from ..repo import implementation
 from ..utils import format
@@ -7,6 +9,10 @@ from . import Command
 class State(Command):
     """ Checks the state of all repositories, and list all those out-of-date"""
     LOCAL = True
+
+    def parse(self, *args: str) -> typing.Any:
+        """ Parses arguments given to this Command """
+        pass
 
     def run(self, repo: description.RepositoryDescription) -> bool:
 

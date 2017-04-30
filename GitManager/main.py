@@ -60,19 +60,19 @@ def real_main(args):
     repos = list(config.descriptions)
 
     if args[1] == 'setup':
-        setup.Setup(line, repos)()
+        setup.Setup(line, repos, *args[1:])()
 
     elif args[1] == 'fetch':
-        fetch.Fetch(line, repos)()
+        fetch.Fetch(line, repos, *args[1:])()
     elif args[1] == 'pull':
-        pull.Pull(line, repos)()
+        pull.Pull(line, repos, *args[1:])()
 
     elif args[1] == 'ls':
-        lister.LsLocal(line, repos)()
+        lister.LsLocal(line, repos, *args[1:])()
     elif args[1] == 'status':
-        status.Status(line, repos)()
+        status.Status(line, repos, *args[1:])()
     elif args[1] == 'state':
-        state.State(line, repos)()
+        state.State(line, repos, *args[1:])()
     else:
         print('Unknown command %r' % (args[1],))
         return 1

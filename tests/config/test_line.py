@@ -46,6 +46,7 @@ class TestConfigLine(unittest.TestCase):
                          'parsing minimal BaseLine with more indent')
 
         self.assertEqual(line.ConfigLine.parse('> hello '),
+
                          line.BaseLine('', 1, ' ', 'hello', ' '),
                          'parsing complete BaseLine with minimal spacing')
 

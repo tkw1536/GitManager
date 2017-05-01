@@ -1,12 +1,21 @@
 import collections
 import os
+import typing
 
 from . import implementation
+from ..config import line
 from abc import ABCMeta
 
 
 class Description(metaclass=ABCMeta):
     """ A Base class for descriptions"""
+    pass
+
+
+@Description.register
+class BaseDescription(collections.namedtuple("BaseDescription", ["folder"])):
+    """ A 'description' of a base folder in the configuration file. """
+
     pass
 
 
@@ -28,9 +37,22 @@ class RepositoryDescription(collections.namedtuple("RepositoryDescription",
         RepositoryDescription """
         return implementation.RemoteRepository(self.source)
 
+    def to_repo_line(self, indent: str, space_1: str, space_2: str) -> \
+            typing.Tuple[BaseDescription, line.RepoLine]:
+        """ Turns this RepositoryDescription into an appropriate RepoLine
+        and description. """
 
-@Description.register
-class BaseDescription(collections.namedtuple("BaseDescription", ["folder"])):
-    """ A 'description' of a base folder in the configuration file. """
+        # get the base name and git clone name
+        (base, name) = os.path.split(self.path)
+        git_name = self.remote.humanish_part()
 
-    pass
+        # if the git name is identical to the already existing name, we just
+        # give the source
+        if name == git_name:
+            return BaseDescription(base), line.RepoLine(indent, self.source,
+                                                        '', '', space_2)
+
+        # else we need to give both
+        else:
+            return BaseDescription(base), line.RepoLine(indent, self.source,
+                                                        space_1, name, space_2)

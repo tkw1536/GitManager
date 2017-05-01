@@ -27,7 +27,7 @@ class TestFile(unittest.TestCase):
         with unittest.mock.patch('builtins.open',
                                  new_callable=unittest.mock.mock_open(
                                      read_data=fake_lines)) \
-                as patch:
+                as _:
             # read all the lines
             fn.read()
 

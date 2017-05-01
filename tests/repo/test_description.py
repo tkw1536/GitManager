@@ -4,8 +4,8 @@ import unittest.mock
 from GitManager.repo import description, implementation
 
 
-class TestDescription(unittest.TestCase):
-    """ Tests that the description class works properly """
+class TestRepositoryDescription(unittest.TestCase):
+    """ Tests that the RepositoryDescription class works properly """
 
     def test_eq(self):
         """ Tests that equality works properly """
@@ -42,3 +42,22 @@ class TestDescription(unittest.TestCase):
             'git@github.com:/example/remote', '/path/to/local').remote,
                          implementation.RemoteRepository(
                              'git@github.com:/example/remote'))
+
+
+class TestBaseDescription(unittest.TestCase):
+    """ Tests that the BaseDescription class works properly """
+
+    def test_eq(self):
+        """ Tests that equality works properly """
+
+        self.assertEqual(
+            description.BaseDescription('/path/to/local'),
+            description.BaseDescription('/path/to/local'),
+            'equality between two descriptions'
+        )
+
+        self.assertNotEqual(
+            description.BaseDescription('/path/to/local/a'),
+            description.BaseDescription('/path/to/local/b'),
+            'inequality between two descriptions'
+        )

@@ -57,7 +57,7 @@ def real_main(args):
         return 1
 
     line = format.TerminalLine()
-    repos = list(config.descriptions)
+    repos = list(config.repositories)
 
     if args.action == 'help' or args.action is None:
         parser.print_help()

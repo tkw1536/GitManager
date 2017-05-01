@@ -8,7 +8,7 @@ class ConfigLine(object):
 
     DIRECTIVE_NOP = re.compile(r'^((\s*)#(.*))|(\s*)$')
     DIRECTIVE_BASE = re.compile(
-        r'(\s*)(>+)(\s+)([^\s]+)(?:(\s+)([^\s]+))?(\s*)$')
+        r'(\s*)(>+)(\s+)([^\s]+)(\s*)$')
     DIRECTIVE_REPO = re.compile(r'^(\s*)([^>\s]+)(?:(\s+)([^\s]+))?(\s*)$')
 
     def __init__(self, indent: str):
@@ -39,9 +39,7 @@ class ConfigLine(object):
         if base_match:
             return BaseLine(base_match.group(1), len(base_match.group(2)),
                             base_match.group(3), base_match.group(4),
-                            base_match.group(5) or '',
-                            base_match.group(6) or '',
-                            base_match.group(7))
+                            base_match.group(5) or '')
 
         repo_match = ConfigLine.DIRECTIVE_REPO.match(s)
         if repo_match:
@@ -82,7 +80,7 @@ class BaseLine(ConfigLine):
     """ A line introducing a new BaseLine """
 
     def __init__(self, indent: str, depth: int, space_1: str, path: str,
-                 space_2: str, repo_pat: str, space_3: str):
+                 space_2: str):
         """ Creates a new BaseLine instance """
 
         super().__init__(indent)
@@ -91,8 +89,6 @@ class BaseLine(ConfigLine):
         self.__space_1 = space_1
         self.__path = path
         self.__space_2 = space_2
-        self.__repo_pat = repo_pat
-        self.__space_3 = space_3
 
     @property
     def depth(self) -> int:
@@ -104,18 +100,12 @@ class BaseLine(ConfigLine):
         """ The path this BaseLine instance introduces """
         return self.__path
 
-    @property
-    def repo_pat(self) -> str:
-        """ The repo pattern introduced by this BaseLine """
-        return self.__repo_pat
-
     def write(self) -> str:
         """ Turns this ConfigLine into a string that can be re-parsed """
 
-        return "{}{}{}{}{}{}{}".format(self.indent, ">" * self.depth,
-                                       self.__space_1, self.path,
-                                       self.__space_2, self.repo_pat,
-                                       self.__space_3)
+        return "{}{}{}{}{}".format(self.indent, ">" * self.depth,
+                                   self.__space_1, self.path,
+                                   self.__space_2)
 
     def __eq__(self, other: typing.Any) -> bool:
         """ Checks that this line is equal to another line """
@@ -125,9 +115,7 @@ class BaseLine(ConfigLine):
                    self.depth == other.depth and \
                    self.__space_1 == other.__space_1 and \
                    self.path == other.path and \
-                   self.__space_2 == other.__space_2 and \
-                   self.repo_pat == other.repo_pat and \
-                   self.__space_3 == other.__space_3
+                   self.__space_2 == other.__space_2
 
         return False
 

@@ -29,11 +29,11 @@ class TestConfigFile(unittest.TestCase):
         fn.lines = [
             line.NOPLine("# Top level line with a comment"),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
-            line.BaseLine('', 1, ' ', 'something', '', 'something-%s', ''),
+            line.BaseLine('', 1, ' ', 'something', ''),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
-            line.BaseLine('', 2, ' ', 'sub', '', 'sub-%s', ''),
+            line.BaseLine('', 2, ' ', 'sub', ''),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
-            line.BaseLine('', 1, ' ', 'else', '', 'else-%s', ''),
+            line.BaseLine('', 1, ' ', 'else', ''),
             line.RepoLine(' ', 'hello', ' ', 'world', ' ')
         ]
 
@@ -41,11 +41,11 @@ class TestConfigFile(unittest.TestCase):
         results = [
             d.RepositoryDescription(source='hello',
                                     path='/path/to/home/world'),
-            d.RepositoryDescription(source='something-hello',
+            d.RepositoryDescription(source='hello',
                                     path='/path/to/home/something/world'),
-            d.RepositoryDescription(source='something-sub-hello',
+            d.RepositoryDescription(source='hello',
                                     path='/path/to/home/something/sub/world'),
-            d.RepositoryDescription(source='else-hello',
+            d.RepositoryDescription(source='hello',
                                     path='/path/to/home/else/world')
         ]
 
@@ -55,7 +55,7 @@ class TestConfigFile(unittest.TestCase):
 
         # reset the lines to something that should thrown an error
         fn.lines = [
-            line.BaseLine('', 2, ' ', 'something', '', 'something-%s', '')
+            line.BaseLine('', 2, ' ', 'something', '')
         ]
 
         # we are skipping a base level -- this should thrown an error
@@ -76,11 +76,11 @@ class TestConfigFile(unittest.TestCase):
         fn.lines = [
             line.NOPLine("# Top level line with a comment"),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
-            line.BaseLine('', 1, ' ', 'something', ' ', 'something-%s', ''),
+            line.BaseLine('', 1, ' ', 'something', ' '),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
-            line.BaseLine('', 2, ' ', 'sub', ' ', 'sub-%s', ''),
+            line.BaseLine('', 2, ' ', 'sub', ' '),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
-            line.BaseLine('', 1, ' ', 'else', ' ', 'else-%s', ''),
+            line.BaseLine('', 1, ' ', 'else', ' '),
             line.RepoLine(' ', 'hello', ' ', 'world', ' ')
         ]
 
@@ -98,7 +98,7 @@ class TestConfigFile(unittest.TestCase):
 
         # reset the lines to something that should thrown an error
         fn.lines = [
-            line.BaseLine('', 2, ' ', 'something', '', 'something-%s', '')
+            line.BaseLine('', 2, ' ', 'something', '')
         ]
 
         # we are skipping a base level -- this should thrown an error
@@ -115,11 +115,11 @@ class TestConfigFile(unittest.TestCase):
         fake_lines = "\n".join([
             "# Top level line with a comment",
             " hello world ",
-            "> something something-%s",
+            "> something ",
             " hello world ",
-            ">> sub sub-%s",
+            ">> sub ",
             " hello world ",
-            "> else else-%s",
+            "> else ",
             " hello world"
         ]).encode("utf-8")
 
@@ -133,11 +133,11 @@ class TestConfigFile(unittest.TestCase):
         expected = [
             line.NOPLine("# Top level line with a comment"),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
-            line.BaseLine('', 1, ' ', 'something', ' ', 'something-%s', ''),
+            line.BaseLine('', 1, ' ', 'something', ' '),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
-            line.BaseLine('', 2, ' ', 'sub', ' ', 'sub-%s', ''),
+            line.BaseLine('', 2, ' ', 'sub', ' '),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
-            line.BaseLine('', 1, ' ', 'else', ' ', 'else-%s', ''),
+            line.BaseLine('', 1, ' ', 'else', ' '),
             line.RepoLine(' ', 'hello', ' ', 'world', ' ')
         ]
 
@@ -155,22 +155,22 @@ class TestConfigFile(unittest.TestCase):
         fn.lines = [
             line.NOPLine("# Top level line with a comment"),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
-            line.BaseLine('', 1, ' ', 'something', ' ', 'something-%s', ''),
+            line.BaseLine('', 1, ' ', 'something', ' '),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
-            line.BaseLine('', 2, ' ', 'sub', ' ', 'sub-%s', ''),
+            line.BaseLine('', 2, ' ', 'sub', ' '),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
-            line.BaseLine('', 1, ' ', 'else', ' ', 'else-%s', ''),
+            line.BaseLine('', 1, ' ', 'else', ' '),
             line.RepoLine(' ', 'hello', ' ', 'world', ' ')
         ]
 
         fake_lines = [
             "# Top level line with a comment",
             " hello world ",
-            "> something something-%s",
+            "> something ",
             " hello world ",
-            ">> sub sub-%s",
+            ">> sub ",
             " hello world ",
-            "> else else-%s",
+            "> else ",
             " hello world "
         ]
 

@@ -28,7 +28,7 @@ class File(object):
         """ returns a list of named """
 
         # A stack for repo folders
-        REPO_STACK = [(os.path.expanduser('~'), '%s')]
+        REPO_STACK = [os.path.expanduser('~')]
 
         for l in self.lines:
 
@@ -36,35 +36,29 @@ class File(object):
                 pass
 
             if isinstance(l, line.BaseLine):
-                # extract the current and new order
+
+                # extract the current and new order of the lines
                 current_order = len(REPO_STACK)
                 new_order = l.depth
 
-                # Check that we are not skipping a level
+                # we can not have a new order lower than 1 depth of the
+                # current level
                 if new_order > current_order:
                     raise Exception(
                         'Unable to parse config file: Missing base sublevel. ')
 
-                # Read the subdirectory and origin path
+                # Read the sub-directory to be added and the old one
                 sub_dir = os.path.expanduser(l.path)
-                clone_uri = l.repo_pat or '%s'
-
-                # Now take the previous item.
                 previous_item = REPO_STACK[new_order - 1]
 
-                # find out the new items
-                new_sub_dir = os.path.join(previous_item[0], sub_dir)
-                new_clone_uri = previous_item[1].replace('%s', clone_uri)
-
-                # Expand it into the new one
-                REPO_STACK[new_order:] = [(new_sub_dir, new_clone_uri)]
+                # add the new sub-directory
+                new_sub_dir = os.path.join(previous_item, sub_dir)
+                REPO_STACK[new_order:] = [new_sub_dir]
 
             if isinstance(l, line.RepoLine):
-                # the current group we are in
-                (stack_loc, stack_pat) = REPO_STACK[-1]
-
-                # Extract the source URI of the previous item
-                source_uri = stack_pat.replace('%s', l.url)
+                # Extract the base directory and the source url
+                stack_loc = REPO_STACK[-1]
+                source_uri = l.url
 
                 # And the path to clone to
                 folder = os.path.expanduser(l.path) or None

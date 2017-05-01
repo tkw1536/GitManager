@@ -61,8 +61,8 @@ GitManager control. It consists of three different types of directives:
     In the case where multiple repositories should be cloned into the same folder, it is inconvenient to
     always give the full path to that folder in the configuration file. For this reason GitManager supports
     the concept of a group. A group can be started by prefixing a line with the ">" character. A group takes
-    two arguments: A path to a folder all repositories should be cloned into, and a pattern to be used for
-    repository origins. The second argument is optional. This is best illustrated in the form of an example: 
+    one argument. A path to a folder all repositories should be cloned into. This is best illustrated in the
+    form of an example:
      ```
     # We can create a group to store all our atom-related projects. 
     # All repositories are automatically available in the ~/AtomProjects folder. 
@@ -70,14 +70,7 @@ GitManager control. It consists of three different types of directives:
        https://github.com/atom/atom
        https://github.com/atom/markdown-preview
        # ...
-    
-    # Sometimes we are cloning from a very similar URL, say all of them from the same github user. 
-    # In this case we could also replace the example above with_
-    
-    > AtomProjects https://github.com/atom/%s
-       atom
-       markdown-preview
-       # ...
+
      ```
     Groups completely support nesting. A sub-groups path and pattern for origin are relative to
     the parent group. To create a sub-group, add another ">" character in front of the line. 
@@ -91,7 +84,7 @@ This project is unit tested with a high coverage rate.
 The tests can be run with:
 
 ```bash
-    nosetests --with-coverage --cover-package GitManager
+nosetests --with-coverage --cover-package GitManager
 ```
 
 Tests are automatically run on Travis CI after every commit.

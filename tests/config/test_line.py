@@ -38,26 +38,24 @@ class TestConfigLine(unittest.TestCase):
         """ Tests that BaseLines can be correctly parsed """
 
         self.assertEqual(line.ConfigLine.parse('> hello'),
-                         line.BaseLine('', 1, ' ', 'hello', '', '', ''),
+                         line.BaseLine('', 1, ' ', 'hello', ''),
                          'parsing minimal BaseLine')
 
         self.assertEqual(line.ConfigLine.parse('>>>> hello'),
-                         line.BaseLine('', 4, ' ', 'hello', '', '', ''),
+                         line.BaseLine('', 4, ' ', 'hello', ''),
                          'parsing minimal BaseLine with more indent')
 
-        self.assertEqual(line.ConfigLine.parse('> hello world'),
-                         line.BaseLine('', 1, ' ', 'hello', ' ', 'world', ''),
+        self.assertEqual(line.ConfigLine.parse('> hello '),
+                         line.BaseLine('', 1, ' ', 'hello', ' '),
                          'parsing complete BaseLine with minimal spacing')
 
-        self.assertEqual(line.ConfigLine.parse('>>>> hello world'),
-                         line.BaseLine('', 4, ' ', 'hello', ' ', 'world', ''),
+        self.assertEqual(line.ConfigLine.parse('>>>> hello '),
+                         line.BaseLine('', 4, ' ', 'hello', ' '),
                          'parsing complete BaseLine with minimal spacing '
                          'and more indent')
 
-        self.assertEqual(line.ConfigLine.parse('\t>>>>\t\thello\t '
-                                               'world\t'),
-                         line.BaseLine('\t', 4, '\t\t', 'hello', '\t ',
-                                       'world', '\t'),
+        self.assertEqual(line.ConfigLine.parse('\t>>>>\t\thello\t '),
+                         line.BaseLine('\t', 4, '\t\t', 'hello', '\t '),
                          'parsing complete BaseLine with spacing '
                          'and more indent')
 
@@ -182,66 +180,59 @@ class TestBaseLine(unittest.TestCase):
     def test_eq(self):
         """ Tests that equality between BaseLines works properly """
 
-        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', '', '', ''),
-                         line.BaseLine('', 1, ' ', 'hello', '', '', ''),
+        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', ''),
+                         line.BaseLine('', 1, ' ', 'hello', ''),
                          'equality between minimal BaseLines')
 
-        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', '', '', ''),
-                         line.BaseLine('', 4, ' ', 'hello', '', '', ''),
+        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', ''),
+                         line.BaseLine('', 4, ' ', 'hello', ''),
                          'equality between minimal BaseLines with more indent')
 
-        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', ' ', 'world', ''),
-                         line.BaseLine('', 1, ' ', 'hello', ' ', 'world', ''),
+        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', ' '),
+                         line.BaseLine('', 1, ' ', 'hello', ' '),
                          'equality between complete BaseLines with minimal '
                          'spacing')
 
-        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', ' ', 'world', ''),
-                         line.BaseLine('', 4, ' ', 'hello', ' ', 'world', ''),
+        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', ' '),
+                         line.BaseLine('', 4, ' ', 'hello', ' '),
                          'equality between complete BaseLines with minimal '
                          'spacing and more indent')
 
-        self.assertEqual(line.BaseLine('\t', 4, '\t\t', 'hello', '\t ',
-                                       'world', '\t'),
-                         line.BaseLine('\t', 4, '\t\t', 'hello', '\t ',
-                                       'world', '\t'),
+        self.assertEqual(line.BaseLine('\t', 4, '\t\t', 'hello', '\t '),
+                         line.BaseLine('\t', 4, '\t\t', 'hello', '\t '),
                          'equality between complete BaseLines with spacing '
                          'and more indent')
 
-        self.assertNotEqual(line.BaseLine('', 1, ' ', 'hello', '', '', ''),
-                            line.BaseLine('', 4, ' ', 'hello', '', '', ''),
+        self.assertNotEqual(line.BaseLine('', 1, ' ', 'hello', ''),
+                            line.BaseLine('', 4, ' ', 'hello', ''),
                             'inequality between different BaseLines')
 
-        self.assertNotEqual(line.BaseLine('', 1, ' ', 'hello', '', '', ''),
+        self.assertNotEqual(line.BaseLine('', 1, ' ', 'hello', ''),
                             line.ConfigLine(''),
                             'inequality between BaseLine and instance of '
                             'other class')
 
     def test_indent(self):
         """ Tests that the indent function works properly  """
-        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', '', '',
-                                       '').indent,
+        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', '').indent,
                          '',
                          'indent of minimal BaseLine')
 
-        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', '', '',
-                                       '').indent,
+        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', '').indent,
                          '',
                          'indent of minimal BaseLines with more '
                          'indent')
 
-        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', ' ', 'world',
-                                       '').indent,
+        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', ' ').indent,
                          '',
                          'indent of complete BaseLine with minimal spacing')
 
-        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', ' ', 'world',
-                                       '').indent,
+        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', ' ').indent,
                          '',
                          'indent of complete BaseLine with minimal '
                          'spacing and more indent')
 
-        self.assertEqual(line.BaseLine('\t', 4, '\t\t', 'hello', '\t ',
-                                       'world', '\t').indent,
+        self.assertEqual(line.BaseLine('\t', 4, '\t\t', 'hello', '\t ').indent,
                          '\t',
                          'indent of complete BaseLines with spacing '
                          'and more indent')
@@ -249,117 +240,77 @@ class TestBaseLine(unittest.TestCase):
     def test_write(self):
         """ Tests that writing BaseLines works properly """
 
-        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', '', '',
-                                       '').write(),
+        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', '').write(),
                          '> hello', 'writing minimal BaseLine')
 
         self.assertEqual(
-            line.BaseLine('', 4, ' ', 'hello', '', '', '').write(),
+            line.BaseLine('', 4, ' ', 'hello', '').write(),
             '>>>> hello',
             'writing minimal BaseLine with more indent')
 
-        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', ' ', 'world',
-                                       '').write(),
-                         '> hello world',
+        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', ' ').write(),
+                         '> hello ',
                          'writing complete BaseLine with minimal spacing')
 
-        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', ' ', 'world',
-                                       '').write(),
-                         '>>>> hello world',
+        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', ' ').write(),
+                         '>>>> hello ',
                          'writing complete BaseLine with minimal spacing '
                          'and more indent')
 
-        self.assertEqual(line.BaseLine('\t', 4, '\t\t', 'hello', '\t ',
-                                       'world', '\t').write(),
-                         '\t>>>>\t\thello\t world\t',
-                         'writing complete BaseLine with spacing '
-                         'and more indent')
+        self.assertEqual(
+            line.BaseLine('\t', 4, '\t\t', 'hello', '\t ').write(),
+            '\t>>>>\t\thello\t ',
+            'writing complete BaseLine with spacing '
+            'and more indent')
 
     def test_depth(self):
         """ Tests that the depth property is read correctly """
-        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', '', '',
-                                       '').depth,
+        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', '').depth,
                          1, 'reading depth of minimal BaseLine')
 
         self.assertEqual(
-            line.BaseLine('', 4, ' ', 'hello', '', '', '').depth,
+            line.BaseLine('', 4, ' ', 'hello', '').depth,
             4,
             'reading depth of minimal BaseLine with more indent')
 
-        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', ' ', 'world',
-                                       '').depth,
+        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', ' ').depth,
                          1,
                          'reading depth of complete BaseLine with minimal '
                          'spacing')
 
-        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', ' ', 'world',
-                                       '').depth,
+        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', ' ').depth,
                          4,
                          'reading depth of complete BaseLine with minimal '
                          'spacing and more indent')
 
-        self.assertEqual(line.BaseLine('\t', 4, '\t\t', 'hello', '\t ',
-                                       'world', '\t').depth,
+        self.assertEqual(line.BaseLine('\t', 4, '\t\t', 'hello', '\t ').depth,
                          4,
                          'reading depth of complete BaseLine with spacing '
                          'and more indent')
 
     def test_path(self):
         """ Tests that the path property is read correctly """
-        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', '', '',
-                                       '').path,
+        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', '').path,
                          'hello', 'reading path of minimal BaseLine')
 
         self.assertEqual(
-            line.BaseLine('', 4, ' ', 'hello', '', '', '').path,
+            line.BaseLine('', 4, ' ', 'hello', '').path,
             'hello',
             'reading path of minimal BaseLine with more indent')
 
-        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', ' ', 'world',
-                                       '').path,
+        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', ' ').path,
                          'hello',
                          'reading path of complete BaseLine with minimal '
                          'spacing')
 
-        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', ' ', 'world',
-                                       '').path,
+        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', ' ').path,
                          'hello',
                          'reading path of complete BaseLine with minimal '
                          'spacing and more indent')
 
-        self.assertEqual(line.BaseLine('\t', 4, '\t\t', 'hello', '\t ',
-                                       'world', '\t').path,
+        self.assertEqual(line.BaseLine('\t', 4, '\t\t', 'hello', '\t ').path,
                          'hello',
                          'reading path of complete BaseLine with spacing '
-                         'and more indent')
-
-    def test_repo_pat(self):
-        """ Tests that the repo_pat property is read correctly """
-        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', '', '',
-                                       '').repo_pat,
-                         '', 'reading repo_pat of minimal BaseLine')
-
-        self.assertEqual(
-            line.BaseLine('', 4, ' ', 'hello', '', '', '').repo_pat,
-            '',
-            'reading repo_pat of minimal BaseLine with more indent')
-
-        self.assertEqual(line.BaseLine('', 1, ' ', 'hello', ' ', 'world',
-                                       '').repo_pat,
-                         'world',
-                         'reading repo_pat of complete BaseLine with minimal '
-                         'spacing')
-
-        self.assertEqual(line.BaseLine('', 4, ' ', 'hello', ' ', 'world',
-                                       '').repo_pat,
-                         'world',
-                         'reading repo_pat of complete BaseLine with minimal '
-                         'spacing and more indent')
-
-        self.assertEqual(line.BaseLine('\t', 4, '\t\t', 'hello', '\t ',
-                                       'world', '\t').repo_pat,
-                         'world',
-                         'reading repo_pat of complete BaseLine with spacing '
                          'and more indent')
 
 

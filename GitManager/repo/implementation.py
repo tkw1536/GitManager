@@ -32,6 +32,19 @@ class LocalRepository(object):
         remotes.wait()
         return remotes.stdout.read().decode("utf-8").split("\n")
 
+    def get_remote_url(self, name: str) -> str:
+        """ Get the url of a remote """
+
+        # get the url of a remote
+        remote_url = run.GitRun("remote", "get-url", name, cwd=self.path)
+
+        # throw an exeception if we fail
+        if not remote_url.success:
+            raise ValueError("Unable to find remote {}".format(name))
+
+        # else return the url
+        return remote_url.stdout.read().decode("utf-8").split("\n")[0]
+
     @property
     def path(self) -> str:
         """ The path to this repository """

@@ -90,6 +90,40 @@ class TestLocalRepository(unittest.TestCase):
         run_gitrun.return_value.wait.assert_called_with()
 
     @unittest.mock.patch('GitManager.utils.run.GitRun')
+    def test_get_remote_url(self, run_gitrun: unittest.mock.Mock):
+        """ checks that get_remote_url function works as intended """
+
+        # create a repository
+        repo = implementation.LocalRepository('/path/to/repository')
+
+        # throw an error for the remote
+        run_gitrun.return_value.stdout = unittest.mock.mock_open(
+            read_data="fatal: No such remote 'example'\n".encode("utf-8"))()
+        run_gitrun.return_value.success = False
+
+        # check that an error is thrown if we look for a remote that doesn't
+        # exist
+        with self.assertRaises(ValueError):
+            repo.get_remote_url("example")
+
+        run_gitrun.assert_called_with('remote', 'get-url', 'example',
+                                      cwd='/path/to/repository')
+
+        # thrown no error
+        run_gitrun.return_value.stdout = unittest.mock.mock_open(
+            read_data="git@example.com:example/repo\n".encode("utf-8"))()
+        run_gitrun.return_value.success = True
+
+        # check that we can actually get the remote url
+        self.assertEqual(repo.get_remote_url('origin'),
+                         'git@example.com:example/repo', 'getting a remote '
+                                                         'url')
+
+        # check that the git run has been called
+        run_gitrun.assert_called_with('remote', 'get-url', 'origin',
+                                      cwd='/path/to/repository')
+
+    @unittest.mock.patch('GitManager.utils.run.GitRun')
     @unittest.mock.patch('os.path.isdir')
     def test_exists(self, os_path_isdir: unittest.mock.Mock,
                     run_gitrun: unittest.mock.Mock):
@@ -106,9 +140,21 @@ class TestLocalRepository(unittest.TestCase):
         os_path_isdir.assert_called_with('/path/to/repository')
         run_gitrun.assert_not_called()
 
-        # setup mocks so that the path exists and is not toplevel
+        # setup mocks so that the path exists but the --show-toplevel fails
         os_path_isdir.reset_mock()
         os_path_isdir.return_value = True
+
+        run_gitrun.reset_mock()
+        run_gitrun.return_value.success = False
+        run_gitrun.return_value.stdout = unittest.mock.mock_open(
+            read_data="/path/to\n".encode("utf-8"))()
+
+        self.assertFalse(repo.exists(),
+                         'non-existence of a repository when toplevel fails')
+
+        os_path_isdir.assert_called_with('/path/to/repository')
+        run_gitrun.assert_called_with('rev-parse', '--show-toplevel',
+                                      cwd='/path/to/repository')
 
         run_gitrun.reset_mock()
         run_gitrun.return_value.success = True
@@ -485,7 +531,7 @@ class TestRemoteRepository(unittest.TestCase):
 
     @unittest.mock.patch('GitManager.utils.run.GitRun')
     def test_clone(self, run_gitrun: unittest.mock.Mock):
-        """ checks that exists method makes an external call """
+        """ checks that clone method makes an external call """
 
         run_gitrun.return_value.success = True
 

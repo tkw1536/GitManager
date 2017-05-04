@@ -618,3 +618,31 @@ class TestTree(unittest.TestCase):
                               'example-repo', ''),
             ]
         )
+
+    @unittest.mock.patch('os.path.expanduser',
+                         side_effect=lambda s: s.replace("~",
+                                                         "/path/to/home/"))
+    def test_rebuild(self, os_path_expanduser: unittest.mock.Mock):
+
+        # create a tree instance and setup lines
+        t = tree.Tree()
+        t.lines = [
+            line.NOPLine("# comment"),
+            line.BaseLine('    ', 1, ' ', 'base1', ''),
+            line.RepoLine('        ', 'git@example.com:/example/repo', ' ',
+                          'example-repo', ''),
+            line.BaseLine('      ', 1, ' ', 'base2', ''),
+            line.RepoLine('        ', 'git@example.com:/example/repo', ' ',
+                          'example-repo', '')
+        ]
+
+        t.rebuild()
+
+        self.assertEqual(t.lines, [
+            line.BaseLine(' ', 1, ' ', 'base1', ''),
+            line.RepoLine('  ', 'git@example.com:/example/repo', ' ',
+                          'example-repo', ''),
+            line.BaseLine(' ', 1, ' ', 'base2', ''),
+            line.RepoLine('  ', 'git@example.com:/example/repo', ' ',
+                          'example-repo', '')
+        ])

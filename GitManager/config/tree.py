@@ -269,3 +269,17 @@ class Tree(object):
 
         # and then insert it
         return self.insert_at(parent, r)
+
+    def rebuild(self):
+        """ Rebuilds this configuration file by re-inserting all
+        repository descriptions from scratches """
+
+        # get all the repository descriptions
+        repos = list(self.repositories)
+
+        # wipe all the lines
+        self.lines = []
+
+        # and re-insert all of the repos
+        for r in repos:
+            self.insert_repo_or_get(r)

@@ -29,6 +29,8 @@ repositories.
 clean working tree, i.e. those where ```git status``` shows a message.
 5. ```git-manager state``` -- Shows all repositories for which the local
 branch is not equal to the remote branch.
+6. ```git-manager reconfigure``` -- Updates configuration file with
+repositories found in a specific folder
 
 ## Configuration
 

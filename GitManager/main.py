@@ -4,7 +4,8 @@ import argparse
 
 from GitManager.utils import format
 from GitManager.config import file
-from GitManager.commands import status, lister, fetch, setup, pull, state, push
+from GitManager.commands import status, lister, fetch, setup, pull, state, \
+    push, reconfigure
 
 
 def main(args):
@@ -30,7 +31,7 @@ def real_main(args):
     """ Main entry point for the program -- may throw errors"""
 
     ACTIONS = ['help', 'setup', 'fetch', 'pull', 'push', 'ls', 'status',
-               'state']
+               'state', 'reconfigure']
 
     # Create an argument parser
     parser = argparse.ArgumentParser(add_help=False)
@@ -79,6 +80,10 @@ def real_main(args):
         status.Status(line, repos, *command_args)()
     elif args.action == 'state':
         state.State(line, repos, *command_args)()
+
+    elif args.action == 'reconfigure':
+        reconfigure.Reconfigure(config, *command_args)()
+
     else:
         print('Unknown command %r' % (args.action,))
         return 1

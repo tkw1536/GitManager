@@ -98,7 +98,7 @@ class TestLocalRepository(unittest.TestCase):
         # create a repository
         repo = implementation.LocalRepository('/path/to/repository')
 
-        # FOR
+        # setup mocks so that the path does not exist
         os_path_isdir.return_value = False
 
         self.assertFalse(repo.exists(), 'non-existence of a repository')
@@ -106,16 +106,37 @@ class TestLocalRepository(unittest.TestCase):
         os_path_isdir.assert_called_with('/path/to/repository')
         run_gitrun.assert_not_called()
 
+        # setup mocks so that the path exists and is not toplevel
         os_path_isdir.reset_mock()
         os_path_isdir.return_value = True
 
         run_gitrun.reset_mock()
         run_gitrun.return_value.success = True
+        run_gitrun.return_value.stdout = unittest.mock.mock_open(
+            read_data="/path/to\n".encode("utf-8"))()
 
-        self.assertTrue(repo.exists(), 'existence of a repository')
+        self.assertFalse(repo.exists(),
+                         'non-existence of a repository when not toplevel')
 
         os_path_isdir.assert_called_with('/path/to/repository')
-        run_gitrun.assert_called_with('rev-parse', cwd='/path/to/repository')
+        run_gitrun.assert_called_with('rev-parse', '--show-toplevel',
+                                      cwd='/path/to/repository')
+
+        # setup mocks so that the path exists and is toplevel
+        os_path_isdir.reset_mock()
+        os_path_isdir.return_value = True
+
+        run_gitrun.reset_mock()
+        run_gitrun.return_value.success = True
+        run_gitrun.return_value.stdout = unittest.mock.mock_open(
+            read_data="/path/to/repository\n".encode("utf-8"))()
+
+        self.assertTrue(repo.exists(),
+                        'existence of a repository when not toplevel')
+
+        os_path_isdir.assert_called_with('/path/to/repository')
+        run_gitrun.assert_called_with('rev-parse', '--show-toplevel',
+                                      cwd='/path/to/repository')
 
     @unittest.mock.patch('GitManager.utils.run.GitRun')
     def test_ref_parse(self, run_gitrun: unittest.mock.Mock):

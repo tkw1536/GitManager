@@ -19,7 +19,7 @@ class LocalRepository(object):
     def __init__(self, path: str):
         """ Creates a new LocalRepository """
 
-        self.__path = path
+        self.__path = os.path.normpath(path)
 
     def __eq__(self, other: typing.Any) -> bool:
         """ Checks if this LocalRepository is equal to another"""
@@ -79,11 +79,23 @@ class LocalRepository(object):
     def exists(self) -> bool:
         """ Checks if this repository exists """
 
+        # check if the directory exists
         if not os.path.isdir(self.path):
             return False
 
-        # TODO: Check that we are indeed in the toplevel
-        return run.GitRun("rev-parse", cwd=self.path).success
+        # try to get the toplevel
+        rev_parse_run = run.GitRun("rev-parse", "--show-toplevel",
+                                   cwd=self.path)
+
+        # if we did not succeed, we are not inside a git repo
+        if not rev_parse_run.success:
+            return False
+
+        # get the actual toplevel
+        toplevel = rev_parse_run.stdout.read().decode("utf-8").split("\n")[0]
+
+        # and check that it is equal to the normal path
+        return os.path.normpath(toplevel) == self.path
 
     def fetch(self) -> bool:
         """ Fetches all remotes from this repository"""

@@ -67,14 +67,16 @@ class Reconfigure(object):
         if self.args.clear:
             self.file.lines = []
 
-        # find repositories in the given path add them
-        for desc in finder.Finder.find_recursive(
-                self.args.path,
-                allow_links=self.args.follow_symlinks,
-                continue_in_repository=self.args.allow_subrepositories
-        ):
-            self.file.insert_repo_or_get(desc)
-            sys.stderr.write("Found {} in {}\n".format(desc.source, desc.path))
+        if self.args.path is not None:
+            # find repositories in the given path add them
+            for desc in finder.Finder.find_recursive(
+                    self.args.path,
+                    allow_links=self.args.follow_symlinks,
+                    continue_in_repository=self.args.allow_subrepositories
+            ):
+                self.file.insert_repo_or_get(desc)
+                sys.stderr.write(
+                    "Found {} in {}\n".format(desc.source, desc.path))
 
         # if the rebuild flag is set, rebuild all the repos
         if self.args.rebuild:

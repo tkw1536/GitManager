@@ -18,7 +18,8 @@ class File(tree.Tree):
         """ Re-reads the lines currently contained in this file """
 
         with open(self.__fn, "r") as fp:
-            self.lines = [line.ConfigLine.parse(l) for l in fp.readlines()]
+            self.lines = [line.ConfigLine.parse(l.rstrip('\n')) for l in
+                          fp.readlines()]
 
     def write(self):
         """ Writes the lines currently contained in this file to disk """

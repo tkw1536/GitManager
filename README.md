@@ -23,14 +23,15 @@ Git-Manager has different commands it provides:
  data from the remotes.
 3. ```git-manager pull``` -- Updates all local repositories by pulling all
 repositories.
-3. ```git-manager push``` -- Pushes all repositories to the remote.
-4. ```git-manager ls``` -- Lists all locally available repositories.
-5. ```git-manager status``` -- Shows all repositories that do not have a
+4. ```git-manager push``` -- Pushes all repositories to the remote.
+5. ```git-manager ls``` -- Lists all locally available repositories.
+6. ```git-manager status``` -- Shows all repositories that do not have a
 clean working tree, i.e. those where ```git status``` shows a message.
-5. ```git-manager state``` -- Shows all repositories for which the local
+7. ```git-manager state``` -- Shows all repositories for which the local
 branch is not equal to the remote branch.
-6. ```git-manager reconfigure``` -- Updates configuration file with
+8. ```git-manager reconfigure``` -- Updates configuration file with
 repositories found in a specific folder
+9. ```git-manager gc``` -- Runs houskeeping tasks on all local repositories
 
 ## Configuration
 

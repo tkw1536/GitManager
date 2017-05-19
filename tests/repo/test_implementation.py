@@ -242,6 +242,38 @@ class TestLocalRepository(unittest.TestCase):
         run_gitrun.return_value.wait.assert_called_with()
 
     @unittest.mock.patch('GitManager.utils.run.GitRun')
+    def test_gc(self, run_gitrun: unittest.mock.Mock):
+        """ checks that gc method makes an external call """
+
+        # create a repository
+        repo = implementation.LocalRepository('/path/to/repository')
+
+        # and make sure that the return value is True
+        run_gitrun.success = True
+
+        # assert that we can garbage collect
+        self.assertTrue(repo.gc(),
+                        'running garbage collection on a repository')
+
+        # check that we called the fetch --all command properly
+        run_gitrun.assert_called_with('gc', cwd='/path/to/repository',
+                                      pipe_stderr=True, pipe_stdin=True,
+                                      pipe_stdout=True)
+
+        # reset the mock
+        run_gitrun.reset_mock()
+        run_gitrun.success = True
+
+        self.assertTrue(repo.gc('--aggresive'),
+                        'running aggressive housekeeping on a repository')
+
+        # check that we called the fetch --all command properly
+        run_gitrun.assert_called_with('gc', '--aggresive',
+                                      cwd='/path/to/repository',
+                                      pipe_stderr=True, pipe_stdin=True,
+                                      pipe_stdout=True)
+
+    @unittest.mock.patch('GitManager.utils.run.GitRun')
     def test_fetch(self, run_gitrun: unittest.mock.Mock):
         """ checks that fetch method makes an external call """
 

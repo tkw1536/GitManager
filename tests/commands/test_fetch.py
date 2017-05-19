@@ -24,6 +24,7 @@ class TestFetch(unittest.TestCase):
         # if the local repository does not exist, we
         implementation_LocalRepository.return_value.exists.return_value = False
         self.assertFalse(cmd.run(repo))
+        implementation_LocalRepository.return_value.fetch.assert_not_called()
 
         # reset the mock
         implementation_LocalRepository.reset_mock()

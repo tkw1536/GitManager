@@ -110,6 +110,14 @@ class LocalRepository(object):
         # and check that it is equal to the normal path
         return os.path.normpath(toplevel) == self.path
 
+    def gc(self, *args: str) -> bool:
+        """ Runs housekeeping tasks on this repository
+        :param args: Arguments to pass along to the houskeeping command
+        """
+
+        return run.GitRun("gc", *args, cwd=self.path, pipe_stderr=True,
+                          pipe_stdin=True, pipe_stdout=True).success
+
     def fetch(self) -> bool:
         """ Fetches all remotes from this repository"""
 

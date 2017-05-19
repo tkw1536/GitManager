@@ -22,6 +22,7 @@ class File(tree.Tree):
                           fp.readlines()]
 
     def write(self):
+
         """ Writes the lines currently contained in this file to disk """
 
         with open(self.__fn, "w") as fp:

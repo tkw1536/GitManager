@@ -8,7 +8,7 @@ from GitManager.repo import implementation
 
 
 class TestState(unittest.TestCase):
-    """ Tests that the fetch command works properly """
+    """ Tests that the state command works properly """
 
     @unittest.mock.patch(
         'GitManager.repo.implementation.LocalRepository')

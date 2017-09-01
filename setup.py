@@ -17,7 +17,7 @@ setup(
     packages=find_packages(),
     scripts=['git-manager'],
 
-    description=("Manages multiple git repositories"),
+    description="Manages multiple git repositories",
     long_description=read('README.md'),
 
     license="MIT",

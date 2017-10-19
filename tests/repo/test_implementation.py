@@ -580,6 +580,45 @@ class TestRemoteRepository(unittest.TestCase):
                                       '/path/to/clone', pipe_stderr=True,
                                       pipe_stdin=True, pipe_stdout=True)
 
+    def test_components(self):
+        """ Checks that the components method works properly"""
+
+        def assert_components(url, components):
+            return self.assertEqual(
+                implementation.RemoteRepository(url).components(), components)
+
+        # git@github.com url
+        g_h_w_c = ['github.com', 'hello', 'world']
+
+        assert_components('git@github.com:hello/world.git', g_h_w_c)
+        assert_components('git@github.com:hello/world', g_h_w_c)
+        assert_components('git@github.com:hello/world/', g_h_w_c)
+        assert_components('git@github.com:hello/world//', g_h_w_c)
+
+        assert_components('ssh://git@github.com/hello/world.git', g_h_w_c)
+        assert_components('ssh://git@github.com/hello/world', g_h_w_c)
+        assert_components('ssh://git@github.com/hello/world/', g_h_w_c)
+        assert_components('ssh://git@github.com/hello/world//', g_h_w_c)
+
+        # https://github.com/user/repo
+        assert_components('https://github.com/hello/world.git', g_h_w_c)
+        assert_components('https://github.com:hello/world', g_h_w_c)
+        assert_components('https://github.com:hello/world/', g_h_w_c)
+        assert_components('https://github.com:hello/world//', g_h_w_c)
+
+        # user@server.com url
+        s_c_u_r = ['server.com', 'user', 'repository']
+
+        assert_components('user@server.com:repository', s_c_u_r)
+        assert_components('user@server.com:repository/', s_c_u_r)
+        assert_components('user@server.com:repository//', s_c_u_r)
+        assert_components('user@server.com:repository.git', s_c_u_r)
+
+        assert_components('ssh://user@server.com/repository', s_c_u_r)
+        assert_components('ssh://user@server.com/repository/', s_c_u_r)
+        assert_components('ssh://user@server.com/repository//', s_c_u_r)
+        assert_components('ssh://user@server.com/repository.git', s_c_u_r)
+
     def test_humanish_part(self):
         """ Checks that the get_humanish_part method works properly"""
 

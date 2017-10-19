@@ -1,4 +1,5 @@
 import os
+import re
 import enum
 import typing
 
@@ -232,25 +233,57 @@ class RemoteRepository(object):
                           pipe_stdin=True, pipe_stdout=True,
                           pipe_stderr=True).success
 
+    def components(self) -> typing.List[str]:
+        """
+        Extracts the compontents of this URL, i.e. a set of items that uniquely
+        identifies where this repository should go.
+        """
+
+        # Trim a trailing '.git'
+        if self.url.endswith('.git'):
+            url = self.url[:-4]
+        else:
+            url = self.url
+
+        # Trim trailing '/'s
+        while url.endswith('/'):
+            url = url[:-1]
+
+        if '://' in url:
+            # [$PROTOCOL]:$PREFIX/$COMPONENTS
+            url = '://'.join(url.split('://')[1:])
+            parts = re.split(r"[\\/:]", url)
+            (prefix, rest) = (parts[0], '/'.join(parts[1:]))
+        else:
+            # $PREFIX:$COMPONENTS
+            parts = url.split(':')
+            (prefix, rest) = (parts[0], ':'.join(parts[1:]))
+
+        # read (user, host) from the prefix
+        if '@' in prefix:
+            parts = prefix.split('@')
+            (user, host) = (parts[0], '@'.join(parts[1:]))
+        else:
+            user = None
+            host = prefix
+
+        # if user is 'git' or 'gogs', ignore it
+        if user in ['git', 'gogs']:
+            user = None
+
+        # prepare to prepend prefix
+        if user is not None:
+            prefix = [host, user]
+        else:
+            prefix = [host]
+
+        # and split into '/'s
+        return prefix + re.split(r"[\\/:]", rest)
+
     def humanish_part(self) -> str:
         """
         Extracts the 'humanish' part of this URL. See the `man git-clone`
         for more details.
         """
 
-        # Trim a trailing '.git'
-        if self.url.endswith('.git'):
-            human = self.url[:-4]
-        else:
-            human = self.url
-
-        # Trim trailing '/'s
-        while human.endswith('/'):
-            human = human[:-1]
-
-        # And take the last part of the path.
-        if '/' in human:
-            human = human.split('/')[-1]
-
-        # and return
-        return human
+        return self.components()[-1]

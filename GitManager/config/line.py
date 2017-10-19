@@ -1,11 +1,11 @@
 import re
-import os.path
 import typing
 
 
 class ConfigLine(object):
     """ A single line in the configuration file """
 
+    DIRECTIVE_ROOT = re.compile(r'^(\s*)##(\s*)([^\s]+)(\s*)$')
     DIRECTIVE_NOP = re.compile(r'^((\s*)#(.*))|(\s*)$')
     DIRECTIVE_BASE = re.compile(
         r'(\s*)(>+)(\s+)([^\s]+)(\s*)$')
@@ -17,6 +17,9 @@ class ConfigLine(object):
         :param indent: The indent of this ConfigLine Line
         """
         self.__indent = indent
+
+    def __repr__(self):
+        return "{}({})".format(self.__class__.__name__, repr(self.write()))
 
     @property
     def indent(self) -> str:
@@ -30,6 +33,11 @@ class ConfigLine(object):
     def parse(s: str):
         """ Parses a string into a ConfigLine
         :rtype: ConfigLine"""
+
+        root_match = ConfigLine.DIRECTIVE_ROOT.match(s)
+        if root_match:
+            return RootLine(root_match.group(1), root_match.group(2),
+                            root_match.group(3), root_match.group(4))
 
         nop_match = ConfigLine.DIRECTIVE_NOP.match(s)
         if nop_match:
@@ -74,6 +82,39 @@ class NOPLine(ConfigLine):
         """ Checks that this line is equal to another line """
 
         return isinstance(other, NOPLine) and self.content == other.content
+
+
+class RootLine(ConfigLine):
+    """ A line defining the root of all repositories """
+
+    def __init__(self, indent: str, space_1: str, root: str, space_2: str):
+        super().__init__(indent)
+        self.__space_1 = space_1
+        self.__root = root
+        self.__space_2 = space_2
+
+    @property
+    def root(self) -> str:
+        """ The root path being set """
+
+        return self.__root
+
+    def write(self) -> str:
+        """ Turns this ConfigLine into a string that can be re-parsed """
+
+        return "{}##{}{}{}".format(self.indent, self.__space_1, self.root,
+                                   self.__space_2)
+
+    def __eq__(self, other: typing.Any) -> bool:
+        """ Checks that this line is equal to another line """
+
+        if isinstance(other, RootLine):
+            return self.indent == other.indent and \
+                   self.root == other.root and \
+                   self.__space_1 == other.__space_1 and \
+                   self.__space_2 == other.__space_2
+
+        return False
 
 
 class BaseLine(ConfigLine):

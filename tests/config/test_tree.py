@@ -19,6 +19,29 @@ class TestTree(unittest.TestCase):
     @unittest.mock.patch('os.path.expanduser',
                          side_effect=lambda s: s.replace("~",
                                                          "/path/to/home/"))
+    def test_root(self, os_path_expanduser: unittest.mock.Mock):
+        """ Test that the lines are correctly initialised """
+
+        t = tree.Tree()
+        self.assertEqual(t.root, '/path/to/home', "by default root is /home")
+
+        t = tree.Tree()
+        t.lines = [line.RootLine('', '', 'root', '')]
+        self.assertEqual(t.root, '/path/to/home/root', "setting relative root")
+
+        t = tree.Tree()
+        t.lines = [line.RootLine('', '', '/opt/root', '')]
+        self.assertEqual(t.root, '/opt/root', "setting absolute root")
+
+        t = tree.Tree()
+        t.lines = [line.RootLine('', '', '/opt/root', ''),
+                   line.RootLine('', '', '/opt/root/second', '')]
+        self.assertEqual(t.root, '/opt/root',
+                         "setting root ignores first root")
+
+    @unittest.mock.patch('os.path.expanduser',
+                         side_effect=lambda s: s.replace("~",
+                                                         "/path/to/home/"))
     def test_descriptions(self, os_path_expanduser: unittest.mock.Mock):
         """ Tests that the descriptions are yielded properly """
 
@@ -34,7 +57,7 @@ class TestTree(unittest.TestCase):
             line.BaseLine('', 2, ' ', 'sub', ''),
             line.RepoLine(' ', 'hello', ' ', 'world', ' '),
             line.BaseLine('', 1, ' ', 'else', ''),
-            line.RepoLine(' ', 'hello', ' ', 'world', ' ')
+            line.RepoLine(' ', 'hello', ' ', 'world', ' '),
         ]
 
         # the intended results
@@ -646,3 +669,19 @@ class TestTree(unittest.TestCase):
             line.RepoLine('  ', 'git@example.com:/example/repo', ' ',
                           'example-repo', '')
         ])
+
+        t = tree.Tree()
+        t.lines = [line.RootLine('', '', 'root', '')]
+        t.rebuild()
+        self.assertEqual(t.lines, [line.RootLine('', '', 'root', '')],
+                         'store relative root')
+
+        t = tree.Tree()
+        t.lines = [line.RootLine('', '', '/path/to/home', '')]
+        t.rebuild()
+        self.assertEqual(t.lines, [], 'hide root when it is /path/to/home')
+
+        t = tree.Tree()
+        t.lines = [line.RootLine('', '', '/opt/root', '')]
+        t.rebuild()
+        self.assertEqual(t.lines, [line.RootLine('', '', '/opt/root', '')])

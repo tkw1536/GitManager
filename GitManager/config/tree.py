@@ -14,6 +14,7 @@ class Tree(object):
 
         self.__lines = []
         self.__base_directory = os.path.expanduser('~').rstrip("/")
+        self.__root = self.__base_directory
 
     @property
     def lines(self) -> typing.List[line.ConfigLine]:
@@ -91,7 +92,19 @@ class Tree(object):
     @lines.setter
     def lines(self, ll: typing.List[line.ConfigLine]):
         """ sets the lines to be contained in this file """
+
+        for l in ll:
+            if isinstance(l, line.RootLine):
+                self.__root = os.path.join(self.__base_directory, l.root)
+                break
+
         self.__lines = ll
+
+    @property
+    def root(self) -> str:
+        """ The root of this repository"""
+
+        return self.__root
 
     def index(self, d: desc.Description) -> typing.Optional[int]:
         """ Finds the index of a specific description inside of this Tree"""
@@ -279,6 +292,14 @@ class Tree(object):
 
         # wipe all the lines
         self.lines = []
+
+        # if the root is not the base directory, insert it.
+        if self.root != self.__base_directory:
+            relroot = os.path.relpath(self.root, self.__base_directory)
+            if relroot.startswith('..'):
+                relroot = self.root
+
+            self.lines.append(line.RootLine('', '', relroot, ''))
 
         # and re-insert all of the repos
         for r in repos:

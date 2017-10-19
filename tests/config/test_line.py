@@ -13,6 +13,17 @@ class TestConfigLine(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             line.ConfigLine.write(None)
 
+    def test_parse_RootLine(self):
+        """ Tests that RootLines can be properly parsed """
+
+        self.assertEqual(line.ConfigLine.parse('##root'),
+                         line.RootLine('', '', 'root', ''),
+                         'parsing root directive')
+
+        self.assertEqual(line.ConfigLine.parse('\t ## /folder '),
+                         line.RootLine('\t ', ' ', '/folder', ' '),
+                         'parsing comments with tabs')
+
     def test_parse_NOPLine(self):
         """ Tests that NOPLines can be correctly parsed """
 
@@ -86,6 +97,45 @@ class TestConfigLine(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             line.ConfigLine.parse(">> hello world #things")
+
+
+class TestRootLine(unittest.TestCase):
+    """ Tests that RootLine class works properly """
+
+    def test_eq(self):
+        """ Checks that equality between RootLines works properly """
+
+        self.assertEqual(line.RootLine('', '', '/root', ''),
+                         line.RootLine('', '', '/root', ''),
+                         'equality of root lines')
+
+        self.assertEqual(line.RootLine('\t ', '', 'folder', ''),
+                         line.RootLine('\t ', '', 'folder', ''),
+                         'equality of root lines')
+
+    def test_indent(self):
+        """ Tests that the indent function works properly  """
+        self.assertEqual(line.RootLine('\t ', '', 'folder', '').indent,
+                         '\t ', 'indent of root line')
+
+        self.assertEqual(line.RootLine('', '', '/root', '').indent,
+                         '', 'indent of root line')
+
+    def test_write(self):
+        """ Tests that writing NOPLines works properly """
+        self.assertEqual(line.RootLine('', '', '/root', '').write(),
+                         '##/root', 'writing root line')
+
+        self.assertEqual(line.RootLine('\t ', '', 'folder', '').write(),
+                         '\t ##folder', 'writing root line')
+
+    def test_root(self):
+        """ Tests that the root attribute is read correctly """
+        self.assertEqual(line.RootLine('', '', '/root', '').root,
+                         '/root', 'root of root line')
+
+        self.assertEqual(line.RootLine('\t ', '', 'folder', '').root,
+                         'folder', 'root of root line')
 
 
 class TestNOPLine(unittest.TestCase):

@@ -227,9 +227,9 @@ class RemoteRepository(object):
         """ Checks if this remote repository exists """
         return run.GitRun("ls-remote", "--exit-code", self.url).success
 
-    def clone(self, local: LocalRepository) -> bool:
+    def clone(self, local: LocalRepository, *args: typing.Tuple[str]) -> bool:
         """ Clones this repository into the path given by a local path"""
-        return run.GitRun("clone", self.url, local.path,
+        return run.GitRun("clone", self.url, local.path, *args,
                           pipe_stdin=True, pipe_stdout=True,
                           pipe_stderr=True).success
 

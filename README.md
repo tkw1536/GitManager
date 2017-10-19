@@ -18,20 +18,24 @@ to install the package. This will make it available by running ```git-manager```
 
 Git-Manager has different commands it provides:
 
-1. ```git-manager setup``` -- Sets up all repositories as configured in the Configuration file.
-2. ```git-manager fetch``` -- Updates all local repositories by fetching all
+1. ```git-manager setup``` -- Sets up all repositories as configured in the
+Configuration file. Takes no parameters.
+2. ```git-manager clone``` -- Clones a repository to a location determined by
+the repository url and the root directory. For example:
+`git manager clone --save https://github.com/tkw1536/GitManager`
+3. ```git-manager fetch``` -- Updates all local repositories by fetching all
  data from the remotes.
-3. ```git-manager pull``` -- Updates all local repositories by pulling all
+4. ```git-manager pull``` -- Updates all local repositories by pulling all
 repositories.
-4. ```git-manager push``` -- Pushes all repositories to the remote.
-5. ```git-manager ls``` -- Lists all locally available repositories.
-6. ```git-manager status``` -- Shows all repositories that do not have a
+5. ```git-manager push``` -- Pushes all repositories to the remote.
+6. ```git-manager ls``` -- Lists all locally available repositories.
+7. ```git-manager status``` -- Shows all repositories that do not have a
 clean working tree, i.e. those where ```git status``` shows a message.
-7. ```git-manager state``` -- Shows all repositories for which the local
+8. ```git-manager state``` -- Shows all repositories for which the local
 branch is not equal to the remote branch.
-8. ```git-manager reconfigure``` -- Updates configuration file with
+9. ```git-manager reconfigure``` -- Updates configuration file with
 repositories found in a specific folder
-9. ```git-manager gc``` -- Runs houskeeping tasks on all local repositories
+10. ```git-manager gc``` -- Runs houskeeping tasks on all local repositories
 
 ## Configuration
 
@@ -45,10 +49,16 @@ In order, it looks for the configuration file in the following locations:
 The configuration file is parsed line-by-line and declares which repositories are under
 GitManager control. It consists of three different types of directives: 
 
-1. **Comments**. 
+1. ** Root Line**
+    Configure the root folder to clone repositories to automatically.
+    Starts with two hashes, then sets the folder relative to the users home direectory. For example:
+    ```
+## /opt/repositories
+    ```
+2. **Comments**.
     Anything starting with a "#" will be treated as a comment. The same goes for empty (or whitespace-only)
-    lines. 
-2. **Repository instruction**
+    lines.
+3. **Repository instruction**
     To declare a repository write ```REPOSITORY_URL  \[FOLDER\]```. This declares that the repository
     from ```REPOSITORY_URL``` should be cloned into the folder ```FOLDER```. In case the folder is omitted,
     the 'humanish' part of the URI will be taken automatically. All folder paths by default are relative to 
@@ -60,7 +70,7 @@ GitManager control. It consists of three different types of directives:
     # makes the  GitManager repository available in the ~/GitManager repository
     https://github.com/tkw1536/GitManager
     ```
-3. **Group Instruction**. 
+4. **Group Instruction**.
     In the case where multiple repositories should be cloned into the same folder, it is inconvenient to
     always give the full path to that folder in the configuration file. For this reason GitManager supports
     the concept of a group. A group can be started by prefixing a line with the ">" character. A group takes

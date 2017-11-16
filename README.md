@@ -1,6 +1,7 @@
 # GitManager
 
 [![Build Status](https://travis-ci.org/tkw1536/GitManager.svg?branch=master)](https://travis-ci.org/tkw1536/GitManager)
+[![PyPI version](https://badge.fury.io/py/git_manager.svg)](https://pypi.python.org/pypi/git_manager)
 
 A script that can handle multiple Git repositories locally.
 Written in Python, supports version 3.5 and upwards.
@@ -12,6 +13,14 @@ Make sure python is installed, then run
 ```bash
 python setup.py install
 ```
+
+or
+
+```bash
+pip install git_manager
+```
+
+
 to install the package. This will make it available by running ```git-manager``` (or ```git manager```). 
 
 ## Usage

@@ -18,24 +18,40 @@ to install the package. This will make it available by running ```git-manager```
 
 Git-Manager has different commands it provides:
 
-1. ```git-manager setup``` -- Sets up all repositories as configured in the
-Configuration file. Takes no parameters.
+1. ```git-manager setup [pattern]``` -- Sets up all repositories as configured in the
+Configuration file.
 2. ```git-manager clone``` -- Clones a repository to a location determined by
 the repository url and the root directory. For example:
 `git manager clone --save https://github.com/tkw1536/GitManager`
-3. ```git-manager fetch``` -- Updates all local repositories by fetching all
+3. ```git-manager fetch [pattern]``` -- Updates all local repositories by fetching all
  data from the remotes.
-4. ```git-manager pull``` -- Updates all local repositories by pulling all
+4. ```git-manager pull [pattern]``` -- Updates all local repositories by pulling all
 repositories.
-5. ```git-manager push``` -- Pushes all repositories to the remote.
-6. ```git-manager ls``` -- Lists all locally available repositories.
-7. ```git-manager status``` -- Shows all repositories that do not have a
+5. ```git-manager push [pattern]``` -- Pushes all repositories to the remote.
+6. ```git-manager ls [pattern]``` -- Lists all locally available repositories.
+7. ```git-manager status [pattern]``` -- Shows all repositories that do not have a
 clean working tree, i.e. those where ```git status``` shows a message.
-8. ```git-manager state``` -- Shows all repositories for which the local
+8. ```git-manager state [pattern]``` -- Shows all repositories for which the local
 branch is not equal to the remote branch.
 9. ```git-manager reconfigure``` -- Updates configuration file with
 repositories found in a specific folder
-10. ```git-manager gc``` -- Runs houskeeping tasks on all local repositories
+10. ```git-manager gc [pattern]``` -- Runs houskeeping tasks on all local repositories
+
+Some commands optionally accept the `pattern` argument.
+This can be used to filter repository by their name.
+
+Repository patterns are simple `glob-like` pattern matches on standardized remote URLs.
+They can also be normal glob patterns on full URLs.
+
+For example:
+
+| Pattern           | Examples                                                             |
+| ----------------- | -------------------------------------------------------------------- |
+| `world`           | `git@github.com:hello/world.git`, `https://github.com/hello/world`   |
+| `hello/*`         | `git@github.com:hello/earth.git`, `git@github.com:hello/mars.git`    |
+| `hello/m*`        | `git@github.com:hello/mars.git`, `git@github.com:hello/mercury.git`  |
+| `github.com/*/*`  | `git@github.com:hello/world.git`, `git@github.com:bye/world.git`     |
+| `github.com/hello`| `git@github.com:hello/world.git`, `git@github.com:hello/mars.git`    |
 
 ## Configuration
 

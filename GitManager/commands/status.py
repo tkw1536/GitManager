@@ -8,10 +8,7 @@ from . import Command
 class Status(Command):
     """ Checks that status of all repositories """
     LOCAL = True
-
-    def parse(self, *args: str) -> typing.Any:
-        """ Parses arguments given to this Command """
-        pass
+    FILTER = True
 
     def run(self, repo: description.RepositoryDescription) -> bool:
 

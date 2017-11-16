@@ -8,10 +8,7 @@ class Pull(Command):
     """ Pulls a repository """
 
     LOCAL = True
-
-    def parse(self, *args: str) -> typing.Any:
-        """ Parses arguments given to this Command """
-        pass
+    FILTER = True
 
     def run(self, repo: description.RepositoryDescription) -> bool:
         if not repo.local.exists():

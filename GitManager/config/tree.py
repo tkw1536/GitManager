@@ -304,3 +304,9 @@ class Tree(object):
         # and re-insert all of the repos
         for r in repos:
             self.insert_repo_or_get(r)
+
+    def find(self, pattern) -> typing.Generator[desc.Description, None, None]:
+        """ Finds all repositories subject to a given description. """
+        for r in self.repositories:
+            if r.remote.matches(pattern):
+                yield r

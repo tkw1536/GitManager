@@ -56,17 +56,6 @@ class TestCommand(unittest.TestCase):
         self.assertEqual(cmd.args, command_parse.return_value)
 
     @unittest.mock.patch('GitManager.utils.format.TerminalLine')
-    def test_parse(self, format_TerminalLine: unittest.mock.Mock):
-        """ Checks that the parse method is not Implemented """
-
-        line = format.TerminalLine()
-        repos = []
-
-        # create a command object
-        with self.assertRaises(NotImplementedError):
-            commands.Command(line, repos)
-
-    @unittest.mock.patch('GitManager.utils.format.TerminalLine')
     @unittest.mock.patch('GitManager.commands.Command.parse')
     def test_run(self, command_parse: unittest.mock.Mock,
                  format_TerminalLine: unittest.mock.Mock):

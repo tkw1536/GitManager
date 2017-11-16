@@ -513,6 +513,30 @@ class TestRemoteRepository(unittest.TestCase):
             'URL of a simple git repository'
         )
 
+    def test_matches(self):
+        """ Tests that the matches() of a remoteRepository works properly """
+
+        repo = implementation.RemoteRepository(
+            'git@github.com:hello/world.git')
+
+        self.assertTrue(repo.matches('world'), 'matching by a simple name')
+        self.assertTrue(repo.matches('hello/world'), 'matching by path')
+        self.assertTrue(repo.matches('w*'), 'matching by simple pattern')
+        self.assertTrue(repo.matches('h*/w*'), 'matching by complex pattern')
+
+        self.assertTrue(repo.matches('github.com/hello'),
+                        'matching at the beginning')
+        self.assertTrue(repo.matches('hello'), 'matching in the middle')
+        self.assertTrue(repo.matches('git@github.com:hello/world.git'),
+                        'matching full url')
+
+        self.assertFalse(repo.matches('wirld'), 'not matching non-pattern')
+        self.assertFalse(repo.matches('hello/wirld'),
+                         'not matching non-pattern')
+        self.assertFalse(repo.matches('*/wirld'), 'not matching non-pattern')
+        self.assertFalse(repo.matches('git@github.com:halo/world.git'),
+                         'not matching full url')
+
     def test_str(self):
         """ Tests that the str() of a remoteRepository works properly """
 

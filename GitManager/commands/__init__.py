@@ -11,6 +11,7 @@ class Command(object):
     fancy lines will be used. """
     PLAIN = False
     LOCAL = False
+    FILTER = False
 
     def __init__(self, line: format.TerminalLine,
                  repos: List[description.RepositoryDescription],
@@ -26,7 +27,10 @@ class Command(object):
     def parse(self, *args: str) -> typing.Any:
         """ Parses arguments given to this Command """
 
-        raise NotImplementedError
+        # if we support filtering, set the filter
+        if self.__class__.FILTER and len(args) > 0:
+            self.__repos = list(
+                filter(lambda d: d.remote.matches(args[0]), self.__repos))
 
     @property
     def args(self) -> typing.Any:

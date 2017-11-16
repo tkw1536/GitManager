@@ -645,6 +645,41 @@ class TestTree(unittest.TestCase):
     @unittest.mock.patch('os.path.expanduser',
                          side_effect=lambda s: s.replace("~",
                                                          "/path/to/home/"))
+    def test_find(self, os_path_expanduser: unittest.mock.Mock):
+        """ Tests that finding repositories works properly """
+
+        # create a tree instance
+        t = tree.Tree()
+
+        # setup the lines properly
+        t.lines = [
+            line.NOPLine("# Top level line with a comment"),
+            line.RepoLine(' ', 'hello', ' ', 'hello', ' '),
+            line.BaseLine('', 1, ' ', 'something', ''),
+            line.RepoLine(' ', 'something/world', ' ', 'world', ' '),
+            line.BaseLine('', 2, ' ', 'sub', ''),
+            line.RepoLine(' ', 'something/sub/hello', ' ', 'hello', ' '),
+            line.BaseLine('', 1, ' ', 'else', ''),
+            line.RepoLine(' ', 'something/else/world', ' ', 'world', ' ')
+        ]
+
+        # the expected 'hello' repos
+        results = [
+            d.RepositoryDescription(source='hello',
+                                    path='/path/to/home/hello'),
+            d.RepositoryDescription(source='something/sub/hello',
+                                    path='/path/to/home/something/sub/hello')
+        ]
+
+        # perform the test
+        actual = t.find('world')
+
+        for (r, a) in zip(results, actual):
+            self.assertEqual(r, a)
+
+    @unittest.mock.patch('os.path.expanduser',
+                         side_effect=lambda s: s.replace("~",
+                                                         "/path/to/home/"))
     def test_rebuild(self, os_path_expanduser: unittest.mock.Mock):
 
         # create a tree instance and setup lines

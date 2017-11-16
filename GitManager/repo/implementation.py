@@ -3,6 +3,8 @@ import re
 import enum
 import typing
 
+import fnmatch
+
 from ..utils import run
 
 
@@ -235,7 +237,7 @@ class RemoteRepository(object):
 
     def components(self) -> typing.List[str]:
         """
-        Extracts the compontents of this URL, i.e. a set of items that uniquely
+        Extracts the components of this URL, i.e. a set of items that uniquely
         identifies where this repository should go.
         """
 
@@ -279,6 +281,35 @@ class RemoteRepository(object):
 
         # and split into '/'s
         return prefix + re.split(r"[\\/:]", rest)
+
+    def matches(self, pattern: str) -> bool:
+        """ Checks if a repository matches a given pattern"""
+
+        # lowercase the pattern
+        pattern = pattern.lower()
+
+        # split the pattern into components
+        if ':' in pattern:
+            pattern_components = RemoteRepository(pattern).components()
+        else:
+            pattern = ':' + pattern
+            pattern_components = RemoteRepository(pattern).components()[1:]
+
+        # count and reassemble
+        pattern_length = len(pattern_components)
+        pattern = '/'.join(pattern_components)
+
+        # get the components of the current repo
+        components = list(map(lambda pc: pc.lower(), self.components()))
+        components_length = len(components)
+
+        # iterate over all sub-paths of the given length
+        for i in range(components_length - pattern_length + 1):
+            suburl = '/'.join(components[i:i + pattern_length])
+            if fnmatch.fnmatch(suburl, pattern):
+                return True
+
+        return False
 
     def humanish_part(self) -> str:
         """

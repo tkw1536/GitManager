@@ -65,13 +65,13 @@ In order, it looks for the configuration file in the following locations:
 The configuration file is parsed line-by-line and declares which repositories are under
 GitManager control. It consists of three different types of directives: 
 
-1. ** Root Line**
+1. **Root Line**
     Configure the root folder to clone repositories to automatically.
     Starts with two hashes, then sets the folder relative to the users home direectory. For example:
     ```
-## /opt/repositories
+    ## /opt/repositories
     ```
-2. **Comments**.
+2. **Comments**
     Anything starting with a "#" will be treated as a comment. The same goes for empty (or whitespace-only)
     lines.
 3. **Repository instruction**
@@ -86,7 +86,7 @@ GitManager control. It consists of three different types of directives:
     # makes the  GitManager repository available in the ~/GitManager repository
     https://github.com/tkw1536/GitManager
     ```
-4. **Group Instruction**.
+4. **Group Instruction**
     In the case where multiple repositories should be cloned into the same folder, it is inconvenient to
     always give the full path to that folder in the configuration file. For this reason GitManager supports
     the concept of a group. A group can be started by prefixing a line with the ">" character. A group takes

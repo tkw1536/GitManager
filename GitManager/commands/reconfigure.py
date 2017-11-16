@@ -3,6 +3,7 @@ import argparse
 
 from ..config import file
 from ..repo import finder
+from ..utils import format
 
 import os
 import sys
@@ -11,8 +12,9 @@ import sys
 class Reconfigure(object):
     """ Reconfigure the configuration file"""
 
-    def __init__(self, f: file.File, *args: str):
+    def __init__(self, line: format.TerminalLine, f: file.File, *args: str):
         self.file = f
+        self.line = line
         self.args = self.parse(*args)
 
     def parse(self, *args: str) -> typing.Any:
@@ -72,11 +74,21 @@ class Reconfigure(object):
             for desc in finder.Finder.find_recursive(
                     self.args.path,
                     allow_links=self.args.follow_symlinks,
-                    continue_in_repository=self.args.allow_subrepositories
+                    continue_in_repository=self.args.allow_subrepositories,
+                    callback=lambda s: self.line.write(
+                        format.Format.short_path(s, self.line.width))
             ):
+                if not self.args.simulate:
+                    self.line.linebreak()
+
+                # print if we found a new repository
+                if not self.file.contains(desc):
+                    self.line.write(desc.path)
+                    self.line.linebreak()
+                    self.line.write("    {}".format(desc.source))
+                    self.line.linebreak()
+
                 self.file.insert_repo_or_get(desc)
-                sys.stderr.write(
-                    "Found {} in {}\n".format(desc.source, desc.path))
 
         # if the rebuild flag is set, rebuild all the repos
         if self.args.rebuild:

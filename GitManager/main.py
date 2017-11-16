@@ -87,7 +87,9 @@ def real_main(args):
         state.State(line, repos, *command_args)()
 
     elif args.action == 'reconfigure':
-        reconfigure.Reconfigure(config, *command_args)()
+        import sys
+        line = format.TerminalLine(fd=sys.stderr)
+        reconfigure.Reconfigure(line, config, *command_args)()
 
     else:
         print('Unknown command %r' % (args.action,))

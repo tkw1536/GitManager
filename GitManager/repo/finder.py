@@ -8,10 +8,12 @@ class Finder(object):
     """ Class that helps finding existing repositories """
 
     @staticmethod
-    def find_recursive(path: str, allow_links: bool = False,
-                       continue_in_repository: bool = False) -> \
-            typing.Generator[
-                description.RepositoryDescription, None, None]:
+    def find_recursive(path: str,
+                       allow_links: bool=False,
+                       continue_in_repository: bool=False,
+                       callback:
+                           typing.Callable[[str], None]=lambda s: None) \
+            -> typing.Generator[description.RepositoryDescription, None, None]:
         """ Finds all repositories within a specific path
         :param path: Paths of repository to find
         :param allow_links: If True, continue searching in repositories even if
@@ -19,7 +21,13 @@ class Finder(object):
         routine to run into a infinite loop
         :param continue_in_repository: If True, instead of stopping the
         recursing inside a repository, continue searching for sub-repositories
+        :param callback: Optional callback to call when scanning a given
+        directory.
+
         """
+
+        # notify the caller that we are scanning path
+        callback(path)
 
         # boolean indicating if we are inside a repository
         is_in_repo = False
@@ -50,7 +58,8 @@ class Finder(object):
                 for desc in Finder.find_recursive(
                         dpath,
                         allow_links=allow_links,
-                        continue_in_repository=continue_in_repository):
+                        continue_in_repository=continue_in_repository,
+                        callback=callback):
                     yield desc
 
     @staticmethod

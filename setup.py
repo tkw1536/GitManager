@@ -7,7 +7,7 @@ def read(fname):
 
 setup(
     name="git_manager",
-    version="0.1.0",
+    version="0.1.1",
 
     url="https://github.com/tkw1536/GitManager",
     author="Tom Wiesing",
@@ -18,7 +18,7 @@ setup(
     scripts=['git-manager'],
 
     description="Manages multiple git repositories",
-    long_description=read('README.md'),
+    long_description=read('README.rst'),
 
     license="MIT",
 

@@ -7,7 +7,7 @@ def read(fname):
 
 setup(
     name="git_manager",
-    version="0.1.1",
+    version="0.2.0",
 
     url="https://github.com/tkw1536/GitManager",
     author="Tom Wiesing",

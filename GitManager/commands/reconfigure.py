@@ -3,6 +3,7 @@ import argparse
 
 from ..config import file
 from ..repo import finder
+from ..repo.implementation import LocalRepository
 from ..utils import format
 
 import os
@@ -30,11 +31,15 @@ class Reconfigure(object):
                             help='Instead of writing out the configuration '
                                  'file to disk, print it to STDOUT. ')
 
-        parser.add_argument('--rebuild', '-r', dest='rebuild',
+        parser.add_argument('--rebuild', '-re', dest='rebuild',
                             action='store_true', default=False,
                             help='Rebuild and clean up the configuration '
                                  'file, removing empty groups. ')
 
+        parser.add_argument('--remove', '-rm', dest='remove',
+                            nargs='*',
+                            help='Remove directories from config file '
+                                 'provided they exist. ')
         parser.add_argument('--clear', '-c', dest='clear',
                             action='store_true', default=False,
                             help='Clear all existing repositories from the '
@@ -62,8 +67,22 @@ class Reconfigure(object):
     def __call__(self):
 
         # if no paths are given, use the current path
-        if not self.args.rebuild and self.args.path is None:
+        if not self.args.rebuild and \
+            self.args.path is None and \
+                not self.args.remove:
             self.args.path = os.getcwd()
+
+        # remove all the locally given repositories
+        if self.args.remove:
+            for path in self.args.remove:
+                success = self.file.remove_local(LocalRepository(path))
+
+                if not self.args.simulate:
+                    if success:
+                        self.line.write('Removed {}'.format(path))
+                    else:
+                        self.line.write('Not Found: {}'.format(path))
+                    self.line.linebreak()
 
         # clear the existing list if asked
         if self.args.clear:

@@ -645,6 +645,50 @@ class TestTree(unittest.TestCase):
     @unittest.mock.patch('os.path.expanduser',
                          side_effect=lambda s: s.replace("~",
                                                          "/path/to/home/"))
+    def test_remove_local(self, os_path_expanduser: unittest.mock.Mock):
+        """ Tests that removing local repositories works properly """
+
+        # create a tree instance
+        t = tree.Tree()
+
+        # setup the lines properly
+        t.lines = [
+            line.NOPLine("# Top level line with a comment"),
+            line.RepoLine(' ', 'hello', ' ', 'hello', ' '),
+            line.BaseLine('', 1, ' ', 'something', ''),
+            line.RepoLine(' ', 'something/world', ' ', 'world', ' '),
+            line.BaseLine('', 2, ' ', 'sub', ''),
+            line.RepoLine(' ', 'something/sub/hello', ' ', 'hello', ' '),
+            line.BaseLine('', 1, ' ', 'else', ''),
+            line.RepoLine(' ', 'something/else/world', ' ', 'world', ' ')
+        ]
+
+        # the expected array after the lines were removed
+        result = [
+            line.NOPLine("# Top level line with a comment"),
+            line.RepoLine(' ', 'hello', ' ', 'hello', ' '),
+            line.BaseLine('', 1, ' ', 'something', ''),
+            line.RepoLine(' ', 'something/world', ' ', 'world', ' '),
+            line.BaseLine('', 2, ' ', 'sub', ''),
+            line.RepoLine(' ', 'something/sub/hello', ' ', 'hello', ' '),
+            line.BaseLine('', 1, ' ', 'else', '')
+        ]
+
+        # check that an existing repo gets removed
+        didRemove = t.remove_local(LocalRepository('/path/to/home/else/world'))
+        self.assertTrue(didRemove)
+        self.assertEqual(t.lines, result, 'Removed existing repo')
+
+        # check that a non-existing repository does not get removed
+        didNotRemove = t.remove_local(
+            LocalRepository('/path/to/home/nonexistent')
+        )
+        self.assertFalse(didNotRemove)
+        self.assertEqual(t.lines, result, 'Did not remove any lines')
+
+    @unittest.mock.patch('os.path.expanduser',
+                         side_effect=lambda s: s.replace("~",
+                                                         "/path/to/home/"))
     def test_find(self, os_path_expanduser: unittest.mock.Mock):
         """ Tests that finding repositories works properly """
 

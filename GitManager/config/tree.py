@@ -285,7 +285,7 @@ class Tree(object):
 
     def rebuild(self):
         """ Rebuilds this configuration file by re-inserting all
-        repository descriptions from scratches """
+        repository descriptions from scratch """
 
         # get all the repository descriptions
         repos = list(self.repositories)
@@ -304,6 +304,30 @@ class Tree(object):
         # and re-insert all of the repos
         for r in repos:
             self.insert_repo_or_get(r)
+
+    def remove_local(self, local: impl.LocalRepository) -> bool:
+        """ Remove a local repository from a configuration file
+        provided it exists """
+
+        index = None
+
+        # search for the local repository
+        for (i, dd) in self.descriptions:
+            if isinstance(dd, desc.RepositoryDescription) and \
+              dd.local == local:
+                index = i
+                break
+
+        # if we did not find it, return
+        if index is None:
+            return False
+
+        # and remove the given index
+        lines = self.lines
+        del self.lines[index]
+        self.lines = lines
+
+        return True
 
     def find(self, pattern) -> typing.Generator[desc.Description, None, None]:
         """ Finds all repositories subject to a given description. """
